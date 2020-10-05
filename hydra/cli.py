@@ -17,7 +17,7 @@ def cli():
 
 def train(project_name, cpu, memory, github_token, cloud):
     click.echo("This is the training command")
-    click.echo(f"Running on {cloud}.")
+    click.echo("Running on {}.".format(cloud))
 
     if cloud == 'local':
         subprocess.run(['sh', 'docker/local_execution.sh', project_name, github_token])
