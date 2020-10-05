@@ -6,7 +6,7 @@ RUN apt-get update && \
 
 RUN apt-get install python3-pip -y
 
-ADD trainer.sh /home
+ADD executor.sh /home
 WORKDIR /home
 
-ENTRYPOINT ["sh", "trainer.sh"]
+ENTRYPOINT ["sh", "executor.sh"]
