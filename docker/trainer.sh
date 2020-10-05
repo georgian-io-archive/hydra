@@ -8,5 +8,5 @@ cd project
 git clone -b test-samples https://$OAUTH_TOKEN:x-oauth-basic@$GIT_URL .
 
 cd $PROJECT_NAME
-pip install -r requirements.txt
-python train.py
+pip3 install -r requirements.txt
+python3 train.py
