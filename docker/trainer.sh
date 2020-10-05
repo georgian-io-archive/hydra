@@ -1,21 +1,12 @@
 #!/bin/bash
 
-while getopts r:t:p: flag
-do
-  case "${flag}" in
-      r) git_url=${OPTARG};;
-      t) oauth_token=${OPTARG};;
-      p) project_name=${OPTARG};
-  esac
-done
-
-echo "Github Repo URL: $git_url"
+echo "Github Repo URL: $GIT_URL"
 
 mkdir project
 cd project
 
-git clone https://$oauth_token:x-oauth-basic@$git_url .
+git clone -b test-samples https://$OAUTH_TOKEN:x-oauth-basic@$GIT_URL .
 
-cd $project_name
+cd $PROJECT_NAME
 pip install -r requirements.txt
 python train.py
