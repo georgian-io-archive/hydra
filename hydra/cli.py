@@ -1,3 +1,4 @@
+import os
 import click
 import subprocess
 from hydra.version import __version__
@@ -20,4 +21,5 @@ def train(model_path, cpu, memory, github_token, cloud):
     click.echo("Running on {}".format(cloud))
 
     if cloud == 'local':
-        subprocess.run(['sh', 'docker/local_execution.sh', model_path, github_token])
+        subprocess.run(
+            ['sh', os.path.join(os.path.dirname(__file__), '../docker/local_execution.sh'), model_path, github_token])
