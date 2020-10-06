@@ -1,4 +1,6 @@
 import os
+import re
+import git
 import click
 import subprocess
 from hydra.version import __version__
@@ -20,6 +22,27 @@ def train(model_path, cpu, memory, github_token, cloud):
     click.echo("This is the training command")
     click.echo("Running on {}".format(cloud))
 
+    repo = git.Repo(os.getcwd())
+    if (repo.bare):
+        raise Exception("This is not a git repo")
+
+    count_modified_files = len(repo.index.diff(None))
+    count_staged_files = len(repo.index.diff("HEAD"))
+    count_unpushed_commits = len(list(repo.iter_commits('master@{u}..master')))
+
+    if count_unpushed_commits > 0:
+        raise Exception("Some commits are not pushed to master branch.")
+
+    if count_staged_files > 0:
+        raise Exception("Some staged files are not commited.")
+
+    if count_modified_files > 0:
+        raise Exception("Some modified files are not staged for commit.")
+
+    git_url = subprocess.check_output("git config --get remote.origin.url", shell=True).decode("utf-8").strip()
+    # Remove https://www. prefix
+    git_url = re.compile(r"https?://(www\.)?").sub("", git_url).strip().strip('/')
+
     if cloud == 'local':
         subprocess.run(
-            ['sh', os.path.join(os.path.dirname(__file__), '../docker/local_execution.sh'), model_path, github_token])
+            ['sh', os.path.join(os.path.dirname(__file__), '../docker/local_execution.sh'), git_url, model_path, github_token])
