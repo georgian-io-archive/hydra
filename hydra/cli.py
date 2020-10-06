@@ -22,6 +22,9 @@ def train(model_path, cpu, memory, github_token, cloud):
     click.echo("This is the training command")
     click.echo("Running on {}".format(cloud))
 
+    if github_token == "":
+        raise Exception("GITHUB_TOKEN not found in environment variable or as argument")
+
     repo = git.Repo(os.getcwd())
     if (repo.bare):
         raise Exception("This is not a git repo")
@@ -42,7 +45,8 @@ def train(model_path, cpu, memory, github_token, cloud):
     git_url = subprocess.check_output("git config --get remote.origin.url", shell=True).decode("utf-8").strip()
     # Remove https://www. prefix
     git_url = re.compile(r"https?://(www\.)?").sub("", git_url).strip().strip('/')
+    commit_sha = subprocess.check_output("git log --pretty=tformat:'%h' -n1 .", shell=True).decode("utf-8").strip()
 
     if cloud == 'local':
         subprocess.run(
-            ['sh', os.path.join(os.path.dirname(__file__), '../docker/local_execution.sh'), git_url, model_path, github_token])
+            ['sh', os.path.join(os.path.dirname(__file__), '../docker/local_execution.sh'), git_url, commit_sha, model_path, github_token])
