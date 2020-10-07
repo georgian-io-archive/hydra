@@ -17,10 +17,12 @@ def cli():
 @click.option('-r', '--memory', default=8, type=click.IntRange(0, 128), help='GB of RAM required')
 @click.option('--cloud', default='local', type=click.Choice(['local', 'aws', 'gcp', 'azure'], case_sensitive=False))
 @click.option('--github_token', envvar='GITHUB_TOKEN') # Takes either an option or environment var
+@click.option('-b', '--branch', default='master', type=str)
 
-def train(model_path, cpu, memory, github_token, cloud):
+def train(model_path, cpu, memory, github_token, cloud, branch):
     click.echo("This is the training command")
     click.echo("Running on {}".format(cloud))
+    click.echo("Remote branch: {}".format(branch))
 
     if github_token == "":
         raise Exception("GITHUB_TOKEN not found in environment variable or as argument")
@@ -31,7 +33,7 @@ def train(model_path, cpu, memory, github_token, cloud):
 
     count_modified_files = len(repo.index.diff(None))
     count_staged_files = len(repo.index.diff("HEAD"))
-    count_unpushed_commits = len(list(repo.iter_commits('master@{u}..master')))
+    count_unpushed_commits = len(list(repo.iter_commits(branch+'@{u}..master')))
 
     if count_unpushed_commits > 0:
         raise Exception("Some commits are not pushed to master branch.")
