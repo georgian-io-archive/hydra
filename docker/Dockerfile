@@ -1,12 +1,6 @@
-FROM ubuntu:20.04
+FROM continuumio/miniconda3
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y git
-
-RUN apt-get install python3-pip -y
-
-ADD executor.sh /home
+ADD docker/executor.sh /home
 WORKDIR /home
 
 ENTRYPOINT ["sh", "executor.sh"]
