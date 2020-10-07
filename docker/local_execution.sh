@@ -8,5 +8,4 @@ docker run \
   -e COMMIT_SHA=$2 \
   -e MODEL_PATH=$3 \
   -e OAUTH_TOKEN=$4 \
-  -e BRANCH=$5 \
   hydra_image:latest > tmp/hydra/$(date +'%Y_%m_%d_%H_%M_%S').log
