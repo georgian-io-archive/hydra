@@ -1,5 +1,5 @@
+#TODO Bug fix building hydra image
 docker build -t hydra_image .
-
 # Create logs folder if it doesn't exist
 mkdir -p tmp/hydra
 

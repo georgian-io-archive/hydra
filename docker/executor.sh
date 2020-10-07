@@ -6,5 +6,7 @@ cd project
 git clone https://$OAUTH_TOKEN:x-oauth-basic@$GIT_URL .
 git checkout $COMMIT_SHA
 
-pip3 install -r requirements.txt
-python3 $MODEL_PATH
+conda env create -f environment.yml
+conda run -n hydra /bin/bash -c
+
+conda run -n hydra python3 $MODEL_PATH
