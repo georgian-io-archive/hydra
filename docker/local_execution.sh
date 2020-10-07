@@ -1,7 +1,7 @@
 docker build -t hydra_image .
 
 # Create logs folder if it doesn't exist
-mkdir -p logs/docker
+mkdir -p tmp/hydra
 
 docker run \
   -e GIT_URL=$1 \
@@ -9,4 +9,4 @@ docker run \
   -e MODEL_PATH=$3 \
   -e OAUTH_TOKEN=$4 \
   -e BRANCH=$5 \
-  hydra_image:latest > logs/docker/$(date +'%Y_%m_%d_%H_%M_%S').log
+  hydra_image:latest > tmp/hydra/$(date +'%Y_%m_%d_%H_%M_%S').log
