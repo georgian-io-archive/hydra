@@ -3,9 +3,7 @@ DIR="$( dirname "${BASH_SOURCE[0]}" )"
 LOG_NAME=$(date +'%Y_%m_%d_%H_%M_%S')
 
 cd $DIR
-#TODO Bug fix building hydra image
 docker build -t hydra_image .
-# Create logs folder if it doesn't exist
 
 docker run \
   -e GIT_URL=$1 \
@@ -15,8 +13,7 @@ docker run \
   -e PREFIX_PARAMS=$5 \
   hydra_image:latest 2>&1 | tee ${LOG_NAME}.log
 
+# Move Log file to where the program is being called 
 cd -
-pwd
 mkdir -p tmp/hydra
-
 mv ${DIR}/${LOG_NAME}.log tmp/hydra/
