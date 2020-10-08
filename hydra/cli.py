@@ -3,6 +3,7 @@ import re
 import click
 import subprocess
 from hydra.utils import check_repo
+from hydra.utils import json_to_string
 from hydra.version import __version__
 
 @click.group()
@@ -21,9 +22,8 @@ def hello(name):
 @click.option('-r', '--memory', default=8, type=click.IntRange(0, 128), help='GB of RAM required')
 @click.option('--cloud', default='local', required=True, type=click.Choice(['fast_local','local', 'aws', 'gcp', 'azure'], case_sensitive=False))
 @click.option('--github_token', envvar='GITHUB_TOKEN') # Takes either an option or environment var
-@click.option('-b', '--branch', default='master', type=str)
 @click.option('-o', '--options', default='{}', type=str)
-def train(model_path, cpu, memory, github_token, cloud, branch, options):
+def train(model_path, cpu, memory, github_token, cloud, options):
     prefix_params = json_to_string(options)
 
     if cloud == 'fast_local':
