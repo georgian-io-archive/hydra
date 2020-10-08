@@ -1,5 +1,6 @@
 import os
 import git
+import json
 
 def check_repo(github_token, branch):
     if github_token == None:
@@ -11,7 +12,7 @@ def check_repo(github_token, branch):
 
     count_modified_files = len(repo.index.diff(None))
     count_staged_files = len(repo.index.diff("HEAD"))
-    count_unpushed_commits = len(list(repo.iter_commits(branch+'@{u}..master')))
+    count_unpushed_commits = len(list(repo.iter_commits('master@{u}..master')))
 
     if count_unpushed_commits > 0:
         raise Exception("Some commits are not pushed to master branch.")
@@ -21,3 +22,12 @@ def check_repo(github_token, branch):
 
     if count_modified_files > 0:
         raise Exception("Some modified files are not staged for commit.")
+
+def json_to_string(packet):
+    dic = json.loads(packet)
+
+    params = ""
+    for key, value in dic.items():
+        params += key + "=" + str(value) + " "
+
+    return params.strip()
