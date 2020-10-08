@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import click
 import subprocess
 from hydra.utils import check_repo
@@ -18,13 +19,20 @@ def cli():
 @click.option('--cloud', default='local', type=click.Choice(['fast_local','local', 'aws', 'gcp', 'azure'], case_sensitive=False))
 @click.option('--github_token', envvar='GITHUB_TOKEN') # Takes either an option or environment var
 @click.option('-b', '--branch', default='master', type=str)
+@click.option('-o', '--options', default='{}', type=str)
 
-def train(model_path, cpu, memory, github_token, cloud, branch):
+def train(model_path, cpu, memory, github_token, cloud, branch, options):
     click.echo("This is the training command")
     click.echo("Running on {}".format(cloud))
 
+    options = json.loads(options)
+
+    prefix_params = ""
+    for key, value in options.items():
+        prefix_params += key + "=" + str(value) + " "
+
     if cloud == 'fast_local':
-        subprocess.run(['python3', model_path])
+        subprocess.run([command_prefix, 'python3', model_path])
 
     check_repo(github_token, branch)
     git_url = subprocess.check_output("git config --get remote.origin.url", shell=True).decode("utf-8").strip()
@@ -34,4 +42,5 @@ def train(model_path, cpu, memory, github_token, cloud, branch):
 
     if cloud == 'local':
         subprocess.run(
-            ['sh', os.path.join(os.path.dirname(__file__), '../docker/local_execution.sh'), git_url, commit_sha, model_path, github_token])
+            ['sh', os.path.join(os.path.dirname(__file__), '../docker/local_execution.sh'),
+             git_url, commit_sha, github_token, model_path, prefix_params])
