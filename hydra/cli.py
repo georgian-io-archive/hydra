@@ -32,7 +32,7 @@ def train(model_path, cpu, memory, github_token, cloud, branch, options):
         prefix_params += key + "=" + str(value) + " "
 
     if cloud == 'fast_local':
-        subprocess.run([command_prefix, 'python3', model_path])
+        subprocess.run([prefix_params, 'python3', model_path])
 
     check_repo(github_token, branch)
     git_url = subprocess.check_output("git config --get remote.origin.url", shell=True).decode("utf-8").strip()
