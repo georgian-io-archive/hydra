@@ -2,7 +2,7 @@ import os
 import git
 
 def check_repo(github_token, branch):
-    if github_token == "":
+    if github_token == None:
         raise Exception("GITHUB_TOKEN not found in environment variable or as argument")
 
     repo = git.Repo(os.getcwd())
