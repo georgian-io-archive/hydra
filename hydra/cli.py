@@ -1,6 +1,5 @@
 import os
 import re
-import json
 import click
 import subprocess
 from hydra.utils import check_repo
@@ -11,6 +10,11 @@ from hydra.version import __version__
 def cli():
     pass
 
+@click.command()
+@click.argument('name')
+def hello(name):
+   click.echo('Hello %s!' % name)
+
 @cli.command()
 @click.option('-m', '--model_path', required=True, type=str)
 @click.option('-c', '--cpu', default=16, type=click.IntRange(0, 128), help='Number of CPU cores required')
@@ -20,11 +24,7 @@ def cli():
 @click.option('-b', '--branch', default='master', type=str)
 @click.option('-o', '--options', default='{}', type=str)
 def train(model_path, cpu, memory, github_token, cloud, branch, options):
-    options = json.loads(options)
-
-    prefix_params = ""
-    for key, value in options.items():
-        prefix_params += key + "=" + str(value) + " "
+    prefix_params = json_to_string(options)
 
     if cloud == 'fast_local':
         subprocess.run([prefix_params, 'python3', model_path])
