@@ -9,4 +9,4 @@ git checkout $COMMIT_SHA
 conda env create -f environment.yml
 conda run -n hydra /bin/bash -c
 
-conda run -n hydra python3 $MODEL_PATH
+conda run -n hydra $PREFIX_PARAMS python3 $MODEL_PATH
