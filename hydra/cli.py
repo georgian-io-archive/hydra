@@ -30,7 +30,7 @@ def train(model_path, cpu, memory, github_token, cloud, options):
         subprocess.run([prefix_params, 'python3', model_path])
         return 0
 
-    check_repo(github_token, branch)
+    check_repo(github_token)
     git_url = subprocess.check_output("git config --get remote.origin.url", shell=True).decode("utf-8").strip()
     # Remove https://www. prefix
     git_url = re.compile(r"https?://(www\.)?").sub("", git_url).strip().strip('/')
