@@ -2,7 +2,7 @@ import os
 import re
 import click
 import subprocess
-from hydra.utils import check_repo
+from hydra.git_repo import check_repo
 from hydra.utils import json_to_string
 from hydra.version import __version__
 
