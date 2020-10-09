@@ -1,6 +1,7 @@
 import os
 import click
 from hydra.utils import *
+from hydra.cloud.local_platform import LocalPlatform
 from hydra.cloud.fast_local_platform import FastLocalPlatform
 from hydra.version import __version__
 
@@ -35,11 +36,9 @@ def train(model_path, cpu, memory, github_token, cloud, options):
     commit_sha = get_commit_sha()
 
     if cloud == 'local':
-        command = ['sh',
-            os.path.join(os.path.dirname(__file__), '../docker/local_execution.sh'),
-            git_url, commit_sha, github_token, model_path, prefix_params]
+        platform = LocalPlatform(model_path, prefix_params, git_url, commit_sha, github_token)
+        platform.train()
 
-        subprocess.run(command)
         return 0
 
     raise Exception("Reached parts of Hydra that are not yet implemented.")
