@@ -2,6 +2,7 @@ import os
 import git
 import warnings
 
+
 class GitRepo():
     def __init__(self, repo):
         self.repo = repo
@@ -22,6 +23,7 @@ class GitRepo():
         branch_name = self.repo.active_branch.name
         count_unpushed_commits = len(list(self.repo.iter_commits('origin/{}..{}'.format(branch_name, branch_name))))
         return count_unpushed_commits > 0
+
 
 def check_repo(github_token, repo=None):
     if github_token == None:
