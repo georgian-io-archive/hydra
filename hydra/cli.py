@@ -1,6 +1,7 @@
 import os
 import click
 from hydra.utils import *
+from hydra.cloud.fast_local_platform import FastLocalPlatform
 from hydra.version import __version__
 
 @click.group()
@@ -24,7 +25,9 @@ def train(model_path, cpu, memory, github_token, cloud, options):
     prefix_params = json_to_string(options)
 
     if cloud == 'fast_local':
-        subprocess.run([prefix_params, 'python3', model_path])
+        platform = FastLocalPlatform(model_path, prefix_params)
+        platform.train()
+
         return 0
 
     check_repo(github_token)
