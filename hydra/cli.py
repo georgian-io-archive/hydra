@@ -1,6 +1,5 @@
 import os
 import click
-from hydra.git_repo import check_repo
 from hydra.utils import *
 from hydra.version import __version__
 
@@ -29,7 +28,6 @@ def train(model_path, cpu, memory, github_token, cloud, options):
         return 0
 
     check_repo(github_token)
-
     git_url = get_repo_url()
     commit_sha = get_commit_sha()
 
