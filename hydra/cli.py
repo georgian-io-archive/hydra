@@ -1,9 +1,7 @@
 import os
-import re
 import click
-import subprocess
 from hydra.git_repo import check_repo
-from hydra.utils import json_to_string
+from hydra.utils import *
 from hydra.version import __version__
 
 @click.group()
@@ -31,15 +29,16 @@ def train(model_path, cpu, memory, github_token, cloud, options):
         return 0
 
     check_repo(github_token)
-    git_url = subprocess.check_output("git config --get remote.origin.url", shell=True).decode("utf-8").strip()
-    # Remove https://www. prefix
-    git_url = re.compile(r"https?://(www\.)?").sub("", git_url).strip().strip('/')
-    commit_sha = subprocess.check_output("git log --pretty=tformat:'%h' -n1 .", shell=True).decode("utf-8").strip()
+
+    git_url = get_repo_url()
+    commit_sha = get_commit_sha()
 
     if cloud == 'local':
-        subprocess.run(
-            ['sh', os.path.join(os.path.dirname(__file__), '../docker/local_execution.sh'),
-             git_url, commit_sha, github_token, model_path, prefix_params])
+        command = ['sh',
+            os.path.join(os.path.dirname(__file__), '../docker/local_execution.sh'),
+            git_url, commit_sha, github_token, model_path, prefix_params]
+
+        subprocess.run(command)
         return 0
 
     raise Exception("Reached parts of Hydra that are not yet implemented.")
