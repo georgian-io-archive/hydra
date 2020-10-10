@@ -9,10 +9,10 @@ from hydra.git_repo import GitRepo
 
 
 def json_to_string(packet):
-    dic = json.loads(packet, object_pairs_hook=OrderedDict)
+    od = json.loads(packet, object_pairs_hook=OrderedDict)
 
     params = ""
-    for key, value in dic.items():
+    for key, value in od.items():
         params += key + "=" + str(value) + " "
 
     return params.strip()
