@@ -4,11 +4,12 @@ import git
 import json
 import warnings
 import subprocess
+import OrderedDict
 from hydra.git_repo import GitRepo
 
 
 def json_to_string(packet):
-    dic = json.loads(packet)
+    dic = json.loads(packet, object_pairs_hook=OrderedDict)
 
     params = ""
     for key, value in dic.items():
