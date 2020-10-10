@@ -4,7 +4,7 @@ import git
 import json
 import warnings
 import subprocess
-import OrderedDict
+from collections import OrderedDict
 from hydra.git_repo import GitRepo
 
 
