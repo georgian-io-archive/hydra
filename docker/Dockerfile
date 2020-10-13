@@ -1,6 +1,6 @@
 FROM continuumio/miniconda3
 
-ADD executor.sh /home
+ADD entry.py /home
 WORKDIR /home
 
-ENTRYPOINT ["sh", "executor.sh"]
+ENTRYPOINT ["python", "entry.py"]
