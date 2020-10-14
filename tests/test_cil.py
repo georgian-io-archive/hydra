@@ -21,15 +21,7 @@ def test_train_local(mocker):
 
     mocker.patch(
         "hydra.cli.check_repo",
-        stub
-    )
-    mocker.patch(
-        "hydra.cli.get_repo_url",
-        return_value=VALID_REPO_URL
-    )
-    mocker.patch(
-        "hydra.cli.get_commit_sha",
-        return_value=VALID_COMMIT_SHA
+        return_value=(VALID_REPO_URL, VALID_COMMIT_SHA)
     )
     mocker.patch(
         "hydra.cli.os.path.join",
