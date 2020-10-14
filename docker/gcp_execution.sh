@@ -1,10 +1,3 @@
-GIT_URL=''
-COMMIT_SHA=''
-OAUTH_TOKEN=''
-MODEL_PATH=''
-PREFIX_PARAMS=''
-REGION=''
-
 print_usage() {
   printf "Usage: TODO"
 }
