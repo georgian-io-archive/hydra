@@ -3,12 +3,15 @@ import pytest_mock
 from hydra.utils import *
 
 VALID_GITHUB_TOKEN = "Georgian"
+VALID_REPO_URL = "https://georgian.io/"
+VALID_COMMIT_SHA = "m1rr0r1ng"
 
 def test_json_to_string():
     test_json = '{"depth":10, "epoch":100}'
     result = json_to_string(test_json)
 
     assert result == "depth=10 epoch=100"
+
 
 def test_empty_json_to_string():
     test_json = '{}'
@@ -43,9 +46,17 @@ def test_check_repo_success(mocker):
         "hydra.git_repo.GitRepo.is_unsynced",
         pass_test
     )
+    mocker.patch(
+        "hydra.utils.get_repo_url",
+        return_value=VALID_REPO_URL
+    )
+    mocker.patch(
+        "hydra.utils.get_commit_sha",
+        return_value=VALID_COMMIT_SHA
+    )
 
-    result = check_repo(VALID_GITHUB_TOKEN)
-    assert result == 0
+    repo_url, commit_sha = check_repo(VALID_GITHUB_TOKEN)
+    assert repo_url == VALID_REPO_URL and commit_sha == VALID_COMMIT_SHA
 
 
 def test_check_repo_empty_token():

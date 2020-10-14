@@ -34,9 +34,7 @@ def train(model_path, cpu, memory, github_token, cloud, options, region, tag):
 
         return 0
 
-    check_repo(github_token)
-    git_url = get_repo_url()
-    commit_sha = get_commit_sha()
+    git_url, commit_sha = check_repo(github_token)
 
     if cloud == 'local':
         platform = LocalPlatform(model_path, prefix_params, git_url, commit_sha, github_token)
