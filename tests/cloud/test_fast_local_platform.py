@@ -8,11 +8,11 @@ def test_train_local(mocker):
     flp = FastLocalPlatform(MODEL_PATH, PREFIX_PARAMS)
 
     mocker.patch(
-        'hydra.cloud.fast_local_platform.FastLocalPlatform.run_command',
+        'hydra.cloud.fast_local_platform.os.system',
     )
 
     result = flp.train()
 
-    flp.run_command.assert_called_once_with([PREFIX_PARAMS, 'python3', MODEL_PATH])
+    os.system.assert_called_once_with(" ".join([PREFIX_PARAMS, 'python3', MODEL_PATH]))
 
     assert result == 0
