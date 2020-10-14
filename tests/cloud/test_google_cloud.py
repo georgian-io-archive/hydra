@@ -1,5 +1,5 @@
 import pytest
-from hydra.cloud.google_cloud import GoogleCloud
+from hydra.cloud.google_cloud import *
 
 MODEL_PATH = "deer/lake"
 PREFIX_PARAMS = "epoch=88 lr=0.01"
@@ -8,19 +8,22 @@ COMMIT_SHA = "2012"
 GITHUB_TOKEN = "201014w828"
 TAG = "default"
 REGION = "us-west2"
+SCRIPT_PATH = "camp/flog/gnaw"
 
 def test_train_local(mocker):
     gcp = GoogleCloud(
         MODEL_PATH, PREFIX_PARAMS, GIT_URL, COMMIT_SHA, GITHUB_TOKEN, TAG, REGION
     )
+    gcp.script_path = SCRIPT_PATH
 
     mocker.patch(
-        'hydra.cli.subprocess.run',
+        'hydra.cloud.google_cloud.GoogleCloud.run_command',
     )
 
-    subprocess.run.assert_called_once_with(
-        ['sh', VALID_FILE_PATH,
-        VALID_REPO_URL, VALID_COMMIT_SHA, VALID_GITHUB_TOKEN,
-        VALID_MODEL_PATH, VALID_PREFIX_PARAMS])
+    result = gcp.train()
 
-    assert result.exit_code == 0
+    gcp.run_command.assert_called_once_with(['sh', SCRIPT_PATH, '-g', GIT_URL,
+        '-c', COMMIT_SHA, '-o', GITHUB_TOKEN, '-m', MODEL_PATH,
+        '-r', REGION, '-t', TAG, '-p', PREFIX_PARAMS])
+
+    assert result == 0
