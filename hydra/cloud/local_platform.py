@@ -14,7 +14,7 @@ class LocalPlatform(AbstractPlatform):
         command = ['sh', execution_script_path, self.git_url, self.commit_sha,
             self.github_token, self.model_path, self.prefix_params]
 
-        subprocess.run(command)
+        self.run_command(command)
         return 0
 
     def serve(self):
