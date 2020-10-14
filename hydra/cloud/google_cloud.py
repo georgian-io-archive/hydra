@@ -1,5 +1,4 @@
 import os
-import subprocess
 from hydra.cloud.abstract_platform import AbstractPlatform
 
 class GoogleCloud(AbstractPlatform):
@@ -16,9 +15,7 @@ class GoogleCloud(AbstractPlatform):
         command = ['sh', execution_script_path, '-g', self.git_url, '-c', self.commit_sha,
             '-o', self.github_token, '-m', self.model_path, '-r', self.region, '-t', self.tag, '-p', self.prefix_params]
 
-        print(" ".join(command))
-
-        subprocess.run(command)
+        self.run_command(command)
         return 0
 
     def serve(self):

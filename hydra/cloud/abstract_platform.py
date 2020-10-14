@@ -1,4 +1,4 @@
-
+import subprocess
 
 class AbstractPlatform():
     def __init__(self, model_path, prefix_params):
@@ -10,3 +10,6 @@ class AbstractPlatform():
 
     def serve(self):
         raise Exception("Not Implemented: Please implement this function in the subclass.")
+
+    def run_command(self, command):
+        subprocess.run(command)
