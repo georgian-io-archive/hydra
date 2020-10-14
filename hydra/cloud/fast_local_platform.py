@@ -1,4 +1,4 @@
-import subprocess
+import os
 from hydra.cloud.abstract_platform import AbstractPlatform
 
 class FastLocalPlatform(AbstractPlatform):
@@ -6,7 +6,7 @@ class FastLocalPlatform(AbstractPlatform):
         super().__init__(model_path, prefix_params)
 
     def train(self):
-        self.run_command([self.prefix_params, 'python3', self.model_path])
+        os.system(" ".join([self.prefix_params, 'python3', self.model_path]))
         return 0
 
     def serve(self):
