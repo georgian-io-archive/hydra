@@ -23,8 +23,9 @@ def hello(name):
 @click.option('--cloud', default='local', required=True, type=click.Choice(['fast_local','local', 'aws', 'gcp', 'azure'], case_sensitive=False))
 @click.option('--region', default='us-west2', type=str)
 @click.option('--github_token', envvar='GITHUB_TOKEN') # Takes either an option or environment var
+@click.option('-t', '--tag', default='', help="Docker image tag name")
 @click.option('-o', '--options', default='{}', type=str, help='Environmental variables for the script')
-def train(model_path, cpu, memory, github_token, cloud, options):
+def train(model_path, cpu, memory, github_token, cloud, options, region, tag):
     prefix_params = json_to_string(options)
 
     if cloud == 'fast_local':
@@ -40,7 +41,7 @@ def train(model_path, cpu, memory, github_token, cloud, options):
     if cloud == 'local':
         platform = LocalPlatform(model_path, prefix_params, git_url, commit_sha, github_token)
     elif cloud == 'gcp':
-        platform = GoogleCloud(model_path, prefix_params, git_url, commit_sha, github_token, region)
+        platform = GoogleCloud(model_path, prefix_params, git_url, commit_sha, github_token, tag, region)
     else:
         raise Exception("Reached parts of Hydra that are not yet implemented.")
 
