@@ -20,7 +20,7 @@ docker push $IMAGE_URI
 # Submit training job
 gcloud ai-platform jobs submit training $JOB_NAME \
   --master-image-uri $IMAGE_URI \
-  --region "us-west1" \
+  --region $6 \
   -- \
   --git_url=$1 \
   --commit_sha=$2 \

@@ -19,8 +19,9 @@ def hello(name):
 @cli.command()
 @click.option('-m', '--model_path', required=True, type=str)
 @click.option('-c', '--cpu', default=16, type=click.IntRange(0, 128), help='Number of CPU cores required')
-@click.option('-r', '--memory', default=8, type=click.IntRange(0, 128), help='GB of RAM required')
+@click.option('--memory', default=8, type=click.IntRange(0, 128), help='GB of RAM required')
 @click.option('--cloud', default='local', required=True, type=click.Choice(['fast_local','local', 'aws', 'gcp', 'azure'], case_sensitive=False))
+@click.option('--region', default='us-west2', type=str)
 @click.option('--github_token', envvar='GITHUB_TOKEN') # Takes either an option or environment var
 @click.option('-o', '--options', default='{}', type=str, help='Environmental variables for the script')
 def train(model_path, cpu, memory, github_token, cloud, options):
@@ -39,7 +40,7 @@ def train(model_path, cpu, memory, github_token, cloud, options):
     if cloud == 'local':
         platform = LocalPlatform(model_path, prefix_params, git_url, commit_sha, github_token)
     elif cloud == 'gcp':
-        platform = GoogleCloud(model_path, prefix_params, git_url, commit_sha, github_token)
+        platform = GoogleCloud(model_path, prefix_params, git_url, commit_sha, github_token, region)
     else:
         raise Exception("Reached parts of Hydra that are not yet implemented.")
 
