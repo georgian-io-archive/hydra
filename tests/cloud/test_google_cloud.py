@@ -9,6 +9,7 @@ GITHUB_TOKEN = "201014w828"
 TAG = "default"
 REGION = "us-west2"
 SCRIPT_PATH = "camp/flog/gnaw"
+MACHINE_NAME = "macbook-pro"
 CPU = 8
 MEMORY = 16
 
@@ -27,6 +28,7 @@ def google_cloud_platform():
     )
 
     gcp.script_path = SCRIPT_PATH
+    gcp.machine_type = MACHINE_NAME
 
     yield gcp
 
@@ -40,7 +42,7 @@ def test_train_local(mocker, google_cloud_platform):
 
     google_cloud_platform.run_command.assert_called_once_with(['sh', SCRIPT_PATH, '-g', GIT_URL,
         '-c', COMMIT_SHA, '-o', GITHUB_TOKEN, '-m', MODEL_PATH,
-        '-r', REGION, '-t', TAG, '-p', PREFIX_PARAMS])
+        '-r', REGION, '-t', TAG, '-n', MACHINE_NAME, '-p', PREFIX_PARAMS])
 
     assert result == 0
 
