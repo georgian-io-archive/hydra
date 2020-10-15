@@ -52,4 +52,7 @@ def check_repo(github_token, repo=None):
     if repo.is_unsynced():
         raise Exception("Some commits are not pushed to the remote repo.")
 
-    return 0
+    repo_url = get_repo_url()
+    commit_sha = get_commit_sha()
+
+    return repo_url, commit_sha
