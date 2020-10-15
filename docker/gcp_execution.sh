@@ -48,6 +48,7 @@ else
 fi
 
 # Submit training job
+#TODO alternative oauth passing
 gcloud ai-platform jobs submit training $JOB_NAME \
   --master-image-uri $IMAGE_URI \
   --region=$REGION \

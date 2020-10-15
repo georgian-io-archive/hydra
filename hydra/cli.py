@@ -39,7 +39,7 @@ def train(model_path, cpu, memory, github_token, cloud, options, region, tag):
     if cloud == 'local':
         platform = LocalPlatform(model_path, prefix_params, git_url, commit_sha, github_token)
     elif cloud == 'gcp':
-        platform = GoogleCloud(model_path, prefix_params, git_url, commit_sha, github_token, tag, region)
+        platform = GoogleCloud(model_path, prefix_params, git_url, commit_sha, github_token, tag, cpu, memory, region)
     else:
         raise Exception("Reached parts of Hydra that are not yet implemented.")
 
