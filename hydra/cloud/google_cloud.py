@@ -1,6 +1,5 @@
 import os
 import json
-from queue import PriorityQueue
 from hydra.cloud.abstract_platform import AbstractPlatform
 
 class GoogleCloud(AbstractPlatform):
