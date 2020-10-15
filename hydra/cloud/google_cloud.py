@@ -22,6 +22,7 @@ class GoogleCloud(AbstractPlatform):
         self.machines_json = os.path.join(os.path.dirname(__file__), '../../resources/gcp_machines.json')
 
         self.machine_type = self.find_machine()
+
         super().__init__(model_path, prefix_params)
 
 
@@ -46,9 +47,9 @@ class GoogleCloud(AbstractPlatform):
 
 
     def train(self):
-        command = ['sh', self.script_path, '-g', self.git_url,
-            '-c', self.commit_sha, '-o', self.github_token, '-m', self.model_path,
-            '-r', self.region, '-t', self.tag, '-p', self.prefix_params]
+        command = ['sh', self.script_path, '-g', self.git_url, '-c', self.commit_sha,
+            '-o', self.github_token, '-m', self.model_path, '-r', self.region,
+            '-t', self.tag, '-n', self.machine_type, '-p', self.prefix_params]
 
         self.run_command(command)
         return 0

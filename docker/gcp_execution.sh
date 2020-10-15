@@ -3,7 +3,7 @@ print_usage() {
 }
 
 # Read bash arguments from flag
-while getopts 'g:c:o:m:r:t:p' flag; do
+while getopts 'g:c:o:m:r:t:n:p' flag; do
   case "${flag}" in
     g) GIT_URL="${OPTARG}" ;;
     c) COMMIT_SHA="${OPTARG}" ;;
@@ -11,6 +11,7 @@ while getopts 'g:c:o:m:r:t:p' flag; do
     m) MODEL_PATH="${OPTARG}" ;;
     r) REGION="${OPTARG}" ;;
     t) IMAGE_TAG="${OPTARG}" ;;
+    n) MACHINE_NAME="${OPTARG}" ;;
     p) PREFIX_PARAMS="${OPTARG}" ;;
     *) print_usage
        exit 1 ;;
@@ -47,11 +48,14 @@ else
   echo "Using stored Docker images in Google Cloud Container Registry."
 fi
 
+echo "Using" $MACHINE_NAME
+
 # Submit training job
-#TODO alternative oauth passing
 gcloud ai-platform jobs submit training $JOB_NAME \
   --master-image-uri $IMAGE_URI \
   --region=$REGION \
+  --scale-tier="CUSTOM" \
+  --master-machine-type=$MACHINE_NAME \
   -- \
   --git_url=$GIT_URL \
   --commit_sha=$COMMIT_SHA \
