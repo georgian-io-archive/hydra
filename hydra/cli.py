@@ -11,10 +11,6 @@ from hydra.version import __version__
 def cli():
     pass
 
-@click.command()
-@click.argument('name')
-def hello(name):
-   click.echo('Hello %s!' % name)
 
 @cli.command()
 # Generic options

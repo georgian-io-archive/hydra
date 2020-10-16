@@ -9,11 +9,6 @@ VALID_FILE_PATH = "ones/and/zer0es"
 VALID_GITHUB_TOKEN =  "Georgian"
 VALID_PREFIX_PARAMS = "{'epoch': 88}"
 
-def test_hello_world():
-    runner = CliRunner()
-    result = runner.invoke(hello, ['Peter'])
-    assert result.exit_code == 0
-    assert result.output == 'Hello Peter!\n'
 
 def test_train_local(mocker):
     def stub(dummy):
