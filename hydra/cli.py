@@ -3,7 +3,7 @@ import click
 from hydra.utils import *
 from hydra.cloud.local_platform import LocalPlatform
 from hydra.cloud.fast_local_platform import FastLocalPlatform
-from hydra.cloud.google_cloud import GoogleCloud
+from hydra.cloud.google_cloud_platform import GoogleCloudPlatform
 from hydra.version import __version__
 
 @click.group()
@@ -39,7 +39,7 @@ def train(model_path, cpu, memory, github_token, cloud, options, region, tag):
     if cloud == 'local':
         platform = LocalPlatform(model_path, prefix_params, git_url, commit_sha, github_token)
     elif cloud == 'gcp':
-        platform = GoogleCloud(model_path, prefix_params, git_url, commit_sha, github_token, tag, cpu, memory, region)
+        platform = GoogleCloudPlatform(model_path, prefix_params, git_url, commit_sha, github_token, tag, cpu, memory, region)
     else:
         raise Exception("Reached parts of Hydra that are not yet implemented.")
 

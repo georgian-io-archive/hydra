@@ -2,7 +2,7 @@ import os
 import json
 from hydra.cloud.abstract_platform import AbstractPlatform
 
-class GoogleCloud(AbstractPlatform):
+class GoogleCloudPlatform(AbstractPlatform):
 
     CPU_COST_PER_HOUR = 0.021811
     MEMORY_COST_PER_HOUR = 0.002923
@@ -35,8 +35,8 @@ class GoogleCloud(AbstractPlatform):
             machine['memory'] = float(machine['memory'])
 
             if machine['cpu_count'] >= self.cpu and machine['memory'] >= self.memory:
-                price = GoogleCloud.CPU_COST_PER_HOUR * machine['cpu_count'] + \
-                    GoogleCloud.MEMORY_COST_PER_HOUR * machine['memory']
+                price = GoogleCloudPlatform.CPU_COST_PER_HOUR * machine['cpu_count'] + \
+                    GoogleCloudPlatform.MEMORY_COST_PER_HOUR * machine['memory']
 
                 if price < optimal_machine['price']:
                     optimal_machine['machine_type'] = machine['machine_type']
