@@ -3,7 +3,7 @@ import click
 from hydra.utils import *
 from hydra.cloud.local_platform import LocalPlatform
 from hydra.cloud.fast_local_platform import FastLocalPlatform
-from hydra.cloud.google_cloud import GoogleCloud
+from hydra.cloud.google_cloud_platform import GoogleCloudPlatform
 from hydra.version import __version__
 
 @click.group()
@@ -67,7 +67,7 @@ def train(
 
     elif cloud == 'gcp':
 
-        platform = GoogleCloud(
+        platform = GoogleCloudPlatform(
             model_path=model_path,
             github_token=github_token,
             cpu=cpu,

@@ -1,5 +1,5 @@
 import pytest
-from hydra.cloud.google_cloud import *
+from hydra.cloud.google_cloud_platform import GoogleCloudPlatform
 
 MODEL_PATH = "deer/lake"
 
@@ -25,7 +25,7 @@ MACHINE_NAME = "macbook-pro"
 
 @pytest.fixture
 def google_cloud_platform():
-    gcp = GoogleCloud(
+    gcp = GoogleCloudPlatform(
         model_path=MODEL_PATH,
         git_url=GIT_URL,
         commit_sha=COMMIT_SHA,
@@ -48,7 +48,7 @@ def google_cloud_platform():
 
 def test_train_local(mocker, google_cloud_platform):
     mocker.patch(
-        'hydra.cloud.google_cloud.GoogleCloud.run_command',
+        'hydra.cloud.google_cloud_platform.GoogleCloudPlatform.run_command',
     )
 
     result = google_cloud_platform.train()
