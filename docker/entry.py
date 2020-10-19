@@ -7,7 +7,7 @@ args_parser = argparse.ArgumentParser()
 args_parser.add_argument('--git_url',required=True)
 args_parser.add_argument('--commit_sha',required=True)
 args_parser.add_argument('--oauth_token',required=True)
-args_parser.add_argument('--prefix_params',required=True)
+args_parser.add_argument('--prefix_params')
 args_parser.add_argument('--model_path',required=True)
 
 args = args_parser.parse_args()
