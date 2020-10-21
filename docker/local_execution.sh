@@ -16,6 +16,8 @@ while getopts 'g:c:o:m:p:a:' flag; do
   esac
 done
 
+PROJECT_DIR=$(PWD)
+
 # Move to Hydra package's docker directory
 DIR="$( dirname "${BASH_SOURCE[0]}" )"
 cd $DIR
@@ -28,7 +30,7 @@ JOB_NAME="job_${DATE}_id_${HASH}"
 # Build and run image
 docker build -t hydra_image .
 docker run \
-  -e GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS \
+  -e GOOGLE_APPLICATION_CREDENTIALS="$PROJECT_DIR/$GOOGLE_APPLICATION_CREDENTIALS" \
   hydra_image:latest \
   --git_url=$GIT_URL \
   --commit_sha=$COMMIT_SHA \
@@ -38,5 +40,5 @@ docker run \
   2>&1 | tee ${JOB_NAME}.log
 
 # Move Log file to where the program is being called
-cd - && mkdir -p tmp/hydra
+cd ${PROJECT_DIR} && mkdir -p tmp/hydra
 mv ${DIR}/${JOB_NAME}.log tmp/hydra/
