@@ -27,8 +27,9 @@ JOB_NAME="job_${DATE}_id_${HASH}"
 
 # Build and run image
 docker build -t hydra_image .
-docker run hydra_image:latest \
+docker run \
   -e GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS \
+  hydra_image:latest \
   --git_url=$GIT_URL \
   --commit_sha=$COMMIT_SHA \
   --oauth_token=$OAUTH_TOKEN \
