@@ -18,6 +18,7 @@ def cli():
 @click.option('--cloud', default='local', required=True, type=click.Choice(['fast_local','local', 'aws', 'gcp', 'azure'], case_sensitive=False))
 @click.option('--github_token', envvar='GITHUB_TOKEN') # Takes either an option or environment var
 
+
 # Cloud specific options
 @click.option('--cpu', default=16, type=click.IntRange(0, 96), help='Number of CPU cores required')
 @click.option('--memory', default=8, type=click.IntRange(0, 624), help='GB of RAM required')
@@ -26,6 +27,7 @@ def cli():
 @click.option('--gpu_type', default='NVIDIA_TESLA_P4', type=str, help="Accelerator GPU type")
 
 @click.option('--region', default='us-west2', type=str, help="Region of cloud server location")
+@click.option('--google_credential_path', default='' type=str, help="GOOGLE CREDENTIAL")
 
 # Docker Options
 @click.option('-t', '--image_tag', default='', type=str, help="Docker image tag name")
@@ -43,6 +45,7 @@ def train(
     gpu_count,
     gpu_type,
     region,
+    google_credential_path,
     image_tag,
     image_url,
     options):
@@ -59,7 +62,13 @@ def train(
 
     if cloud == 'local':
 
-        platform = LocalPlatform(model_path, prefix_params, git_url, commit_sha, github_token)
+        platform = LocalPlatform(
+            model_path=model_path,
+            prefix_params=prefix_params,
+            git_url=git_url,
+            commit_sha=commit_sha,
+            github_token=github_token,
+            google_credential_path=google_credential_path)
 
     elif cloud == 'gcp':
 

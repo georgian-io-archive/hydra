@@ -3,13 +3,14 @@ print_usage() {
 }
 
 # Read bash arguments from flag
-while getopts 'g:c:o:m:p:' flag; do
+while getopts 'g:c:o:m:p:a:' flag; do
   case "${flag}" in
     g) GIT_URL="${OPTARG}" ;;
     c) COMMIT_SHA="${OPTARG}" ;;
     o) OAUTH_TOKEN="${OPTARG}" ;;
     m) MODEL_PATH="${OPTARG}" ;;
     p) PREFIX_PARAMS="${OPTARG}" ;;
+    a) GOOGLE_APPLICATION_CREDENTIALS="${OPTARG}" ;;
     *) print_usage
        exit 1 ;;
   esac
@@ -27,6 +28,7 @@ JOB_NAME="job_${DATE}_id_${HASH}"
 # Build and run image
 docker build -t hydra_image .
 docker run hydra_image:latest \
+  -e GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS \
   --git_url=$GIT_URL \
   --commit_sha=$COMMIT_SHA \
   --oauth_token=$OAUTH_TOKEN \

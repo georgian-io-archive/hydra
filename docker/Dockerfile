@@ -1,6 +1,7 @@
 FROM continuumio/miniconda3
 
-COPY entry.py /home
 WORKDIR /home
+
+COPY entry.py .
 
 ENTRYPOINT ["python", "entry.py"]
