@@ -10,15 +10,14 @@ while getopts 'g:c:o:m:p:a:' flag; do
     o) OAUTH_TOKEN="${OPTARG}" ;;
     m) MODEL_PATH="${OPTARG}" ;;
     p) PREFIX_PARAMS="${OPTARG}" ;;
-    a) GOOGLE_CREDENTIALS_FILE="${OPTARG}" ;;
+    a) GOOGLE_APPLICATION_CREDENTIALS="${OPTARG}" ;;
     *) print_usage
        exit 1 ;;
   esac
 done
 
-PROJECT_DIR=$(PWD)
-
 # Move to Hydra package's docker directory
+PROJECT_DIR=$(PWD)
 DIR="$( dirname "${BASH_SOURCE[0]}" )"
 cd $DIR
 
@@ -30,8 +29,8 @@ JOB_NAME="job_${DATE}_id_${HASH}"
 # Build and run image
 docker build -t hydra_image .
 docker run \
-  -e GOOGLE_APPLICATION_CREDENTIALS="$PROJECT_DIR/$GOOGLE_CREDENTIALS_FILE" \
-  -v $GOOGLE_APPLICATION_CREDENTIALS:"$PROJECT_DIR/$GOOGLE_CREDENTIALS_FILE":ro \
+  -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/key.json \
+  -v "$PROJECT_DIR/$GOOGLE_APPLICATION_CREDENTIALS":/tmp/keys/key.json:ro \
   hydra_image:latest \
   --git_url=$GIT_URL \
   --commit_sha=$COMMIT_SHA \
