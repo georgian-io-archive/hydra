@@ -27,4 +27,6 @@ subprocess.run(["git", "clone", "https://{}:x-oauth-basic@{}".format(args.oauth_
 subprocess.run(["git", "-C", "./hydra", "checkout", "0d8dcc8"])
 subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "-e", "hydra/"])
 
+subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "mlflow"])
+
 subprocess.run(["conda", "run", "-n", "hydra", "python3", args.model_path])
