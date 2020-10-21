@@ -7,7 +7,7 @@ class LocalPlatform(AbstractPlatform):
         self.git_url = git_url
         self.commit_sha = commit_sha
         self.github_token = github_token
-        self.google_credential_path] = google_credential_path
+        self.google_credential_path = google_credential_path
         super().__init__(model_path, prefix_params)
 
     def train(self):
