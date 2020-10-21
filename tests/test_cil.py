@@ -8,7 +8,22 @@ VALID_COMMIT_SHA = "m1rr0r1ng"
 VALID_FILE_PATH = "ones/and/zer0es"
 VALID_GITHUB_TOKEN =  "Georgian"
 VALID_PREFIX_PARAMS = "{'epoch': 88}"
+VALID_GOOGLE_CREDENTIAL = 'google.json'
 
+CPU = 8
+MEMORY = 16
+GPU_TYPE = 'NVIDIA Tesla P4'
+GPU_COUNT = 1
+
+IMAGE_TAG = "default"
+IMAGE_URL = "snow/reggie.ie"
+
+REGION = "us-west2"
+
+PREFIX_PARAMS = "epoch=88 lr=0.01"
+
+SCRIPT_PATH = "camp/flog/gnaw"
+MACHINE_NAME = "macbook-pro"
 
 def test_train_local(mocker):
     def stub(dummy):
@@ -28,15 +43,88 @@ def test_train_local(mocker):
     )
 
     mocker.patch(
-        'hydra.cli.subprocess.run',
+        'hydra.cli.LocalPlatform.__init__',
+        return_value=None
+    )
+
+    mocker.patch(
+        'hydra.cli.LocalPlatform.train',
     )
 
     runner = CliRunner()
-    result = runner.invoke(train, ['--model_path', VALID_MODEL_PATH, '--cloud', 'local', '--github_token', VALID_GITHUB_TOKEN])
+    result = runner.invoke(train,
+        ['--model_path', VALID_MODEL_PATH,
+         '--cloud', 'local',
+         '--github_token', VALID_GITHUB_TOKEN,
+         '--google_credential_path', VALID_GOOGLE_CREDENTIAL])
+
+    LocalPlatform.__init__.assert_called_once_with(
+        model_path=VALID_MODEL_PATH,
+        prefix_params=VALID_PREFIX_PARAMS,
+        git_url=VALID_REPO_URL,
+        commit_sha=VALID_COMMIT_SHA,
+        github_token=VALID_GITHUB_TOKEN,
+        google_credential_path=VALID_GOOGLE_CREDENTIAL
+    )
+
+    LocalPlatform.train.assert_called_once_with()
+
+    assert result.exit_code == 0
 
 
-    subprocess.run.assert_called_once_with(
-        ['sh', VALID_FILE_PATH, '-g', VALID_REPO_URL, '-c', VALID_COMMIT_SHA,
-        '-o', VALID_GITHUB_TOKEN, '-m', VALID_MODEL_PATH, '-p', VALID_PREFIX_PARAMS])
+
+def test_train_google_cloud(mocker):
+    mocker.patch(
+        "hydra.cli.check_repo",
+        return_value=(VALID_REPO_URL, VALID_COMMIT_SHA)
+    )
+    mocker.patch(
+        "hydra.cli.os.path.join",
+        return_value=VALID_FILE_PATH
+    )
+    mocker.patch(
+        "hydra.cli.json_to_string",
+        return_value=VALID_PREFIX_PARAMS
+    )
+
+    mocker.patch(
+        'hydra.cli.GoogleCloudPlatform.__init__',
+        return_value=None
+    )
+
+    mocker.patch(
+        'hydra.cli.GoogleCloudPlatform.train'
+    )
+
+    runner = CliRunner()
+    result = runner.invoke(train,
+        ['--model_path', VALID_MODEL_PATH,
+         '--cloud', 'gcp',
+         '--github_token', VALID_GITHUB_TOKEN,
+         '--cpu', CPU,
+         '--memory', MEMORY,
+         '--gpu_count', GPU_COUNT,
+         '--gpu_type', GPU_TYPE,
+         '--region', REGION,
+         '--image_tag', IMAGE_TAG,
+         '--image_url', IMAGE_URL,
+         '--google_credential_path', VALID_GOOGLE_CREDENTIAL])
+
+    GoogleCloudPlatform.__init__.assert_called_once_with(
+        model_path=VALID_MODEL_PATH,
+        github_token=VALID_GITHUB_TOKEN,
+        cpu=CPU,
+        memory=MEMORY,
+        gpu_count=GPU_COUNT,
+        gpu_type=GPU_TYPE,
+        region=REGION,
+        git_url=VALID_REPO_URL,
+        commit_sha=VALID_COMMIT_SHA,
+        image_url=IMAGE_URL,
+        image_tag=IMAGE_TAG,
+        prefix_params=VALID_PREFIX_PARAMS,
+    )
+
+    GoogleCloudPlatform.train.assert_called_once_with()
 
     assert result.exit_code == 0
