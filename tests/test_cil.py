@@ -36,8 +36,7 @@ def test_train_local(mocker):
 
 
     subprocess.run.assert_called_once_with(
-        ['sh', VALID_FILE_PATH,
-        VALID_REPO_URL, VALID_COMMIT_SHA, VALID_GITHUB_TOKEN,
-        VALID_MODEL_PATH, VALID_PREFIX_PARAMS])
+        ['sh', VALID_FILE_PATH, '-g', VALID_REPO_URL, '-c', VALID_COMMIT_SHA,
+        '-o', VALID_GITHUB_TOKEN, '-m', VALID_MODEL_PATH, '-p', VALID_PREFIX_PARAMS])
 
     assert result.exit_code == 0
