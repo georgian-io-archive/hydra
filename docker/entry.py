@@ -27,5 +27,8 @@ subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "-e", "hydra/"]
 
 subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "mlflow"])
 
-os.system(args.prefix_params)
+for arg in args.prefix_params.split():
+    print("export " + arg)
+    os.system("export " + arg)
+    
 subprocess.run(["conda", "run", "-n", "hydra", "python3", args.model_path])
