@@ -1,6 +1,7 @@
 import os
 import click
-from hydra.utils import *
+from hydra.utils.utils import json_to_string
+from hydra.utils.git import check_repo
 from hydra.cloud.local_platform import LocalPlatform
 from hydra.cloud.fast_local_platform import FastLocalPlatform
 from hydra.cloud.google_cloud_platform import GoogleCloudPlatform

@@ -1,23 +1,10 @@
 import pytest
 import pytest_mock
-from hydra.utils import *
+from hydra.utils.git import *
 
 VALID_GITHUB_TOKEN = "Georgian"
 VALID_REPO_URL = "https://georgian.io/"
 VALID_COMMIT_SHA = "m1rr0r1ng"
-
-def test_json_to_string():
-    test_json = '{"depth":10, "epoch":100}'
-    result = json_to_string(test_json)
-
-    assert result == "depth=10 epoch=100"
-
-
-def test_empty_json_to_string():
-    test_json = '{}'
-    result = json_to_string(test_json)
-
-    assert result == ""
 
 
 def test_check_repo_success(mocker):
@@ -27,31 +14,31 @@ def test_check_repo_success(mocker):
         return True
 
     mocker.patch(
-        "hydra.git_repo.GitRepo.is_empty",
+        "hydra.utils.git_repo.GitRepo.is_empty",
         pass_test
     )
     mocker.patch(
-        "hydra.git_repo.GitRepo.is_untracked",
+        "hydra.utils.git_repo.GitRepo.is_untracked",
         pass_test
     )
     mocker.patch(
-        "hydra.git_repo.GitRepo.is_modified",
+        "hydra.utils.git_repo.GitRepo.is_modified",
         pass_test
     )
     mocker.patch(
-        "hydra.git_repo.GitRepo.is_uncommitted",
+        "hydra.utils.git_repo.GitRepo.is_uncommitted",
         pass_test
     )
     mocker.patch(
-        "hydra.git_repo.GitRepo.is_unsynced",
+        "hydra.utils.git_repo.GitRepo.is_unsynced",
         pass_test
     )
     mocker.patch(
-        "hydra.utils.get_repo_url",
+        "hydra.utils.git.get_repo_url",
         return_value=VALID_REPO_URL
     )
     mocker.patch(
-        "hydra.utils.get_commit_sha",
+        "hydra.utils.git.get_commit_sha",
         return_value=VALID_COMMIT_SHA
     )
 
@@ -74,23 +61,23 @@ def test_check_repo_untracked(mocker):
     with pytest.raises(Exception) as err:
 
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_empty",
+            "hydra.utils.git_repo.GitRepo.is_empty",
             fail_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_untracked",
+            "hydra.utils.git_repo.GitRepo.is_untracked",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_modified",
+            "hydra.utils.git_repo.GitRepo.is_modified",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_uncommitted",
+            "hydra.utils.git_repo.GitRepo.is_uncommitted",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_unsynced",
+            "hydra.utils.git_repo.GitRepo.is_unsynced",
             pass_test
         )
 
@@ -108,23 +95,23 @@ def test_check_repo_modified(mocker):
     with pytest.raises(Exception) as err:
 
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_empty",
+            "hydra.utils.git_repo.GitRepo.is_empty",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_untracked",
+            "hydra.utils.git_repo.GitRepo.is_untracked",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_modified",
+            "hydra.utils.git_repo.GitRepo.is_modified",
             fail_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_uncommitted",
+            "hydra.utils.git_repo.GitRepo.is_uncommitted",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_unsynced",
+            "hydra.utils.git_repo.GitRepo.is_unsynced",
             pass_test
         )
 
@@ -142,23 +129,23 @@ def test_check_repo_uncommitted(mocker):
     with pytest.raises(Exception) as err:
 
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_empty",
+            "hydra.utils.git_repo.GitRepo.is_empty",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_untracked",
+            "hydra.utils.git_repo.GitRepo.is_untracked",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_modified",
+            "hydra.utils.git_repo.GitRepo.is_modified",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_uncommitted",
+            "hydra.utils.git_repo.GitRepo.is_uncommitted",
             fail_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_unsynced",
+            "hydra.utils.git_repo.GitRepo.is_unsynced",
             pass_test
         )
 
@@ -176,23 +163,23 @@ def test_check_repo_unsynced(mocker):
     with pytest.raises(Exception) as err:
 
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_empty",
+            "hydra.utils.git_repo.GitRepo.is_empty",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_untracked",
+            "hydra.utils.git_repo.GitRepo.is_untracked",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_modified",
+            "hydra.utils.git_repo.GitRepo.is_modified",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_uncommitted",
+            "hydra.utils.git_repo.GitRepo.is_uncommitted",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_unsynced",
+            "hydra.utils.git_repo.GitRepo.is_unsynced",
             fail_test
         )
 
@@ -210,23 +197,23 @@ def test_check_repo_untracked(mocker):
     with pytest.warns(UserWarning) as record:
 
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_empty",
+            "hydra.utils.git_repo.GitRepo.is_empty",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_untracked",
+            "hydra.utils.git_repo.GitRepo.is_untracked",
             fail_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_modified",
+            "hydra.utils.git_repo.GitRepo.is_modified",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_uncommitted",
+            "hydra.utils.git_repo.GitRepo.is_uncommitted",
             pass_test
         )
         mocker.patch(
-            "hydra.git_repo.GitRepo.is_unsynced",
+            "hydra.utils.git_repo.GitRepo.is_unsynced",
             pass_test
         )
 

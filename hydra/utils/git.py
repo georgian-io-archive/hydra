@@ -1,21 +1,9 @@
 import re
 import os
 import git
-import json
 import warnings
 import subprocess
-from collections import OrderedDict
-from hydra.git_repo import GitRepo
-
-
-def json_to_string(packet):
-    od = json.loads(packet, object_pairs_hook=OrderedDict)
-
-    params = ""
-    for key, value in od.items():
-        params += key + "=" + str(value) + " "
-
-    return params.strip()
+from hydra.utils.git_repo import GitRepo
 
 
 def get_repo_url():
