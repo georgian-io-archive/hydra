@@ -40,5 +40,5 @@ docker run \
   2>&1 | tee ${JOB_NAME}.log
 
 # Move Log file to where the program is being called
-cd ${PROJECT_DIR} && mkdir -p tmp/hydra
+cd - && mkdir -p tmp/hydra
 mv ${DIR}/${JOB_NAME}.log tmp/hydra/
