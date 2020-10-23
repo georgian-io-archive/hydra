@@ -30,7 +30,7 @@ def cli():
 @click.option('--region', default='us-west2', type=str, help="Region of cloud server location")
 
 # Docker Options
-@click.option('-t', '--image_tag', default='', type=str, help="Docker image tag name")
+@click.option('-t', '--image_tag', default='main', type=str, help="Docker image tag name")
 @click.option('-u', '--image_url', default='', type=str, help="Url to the docker image on cloud")
 
 # Env variable of model file
