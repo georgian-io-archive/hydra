@@ -69,7 +69,7 @@ if [[ $GPU_COUNT == '0' ]]; then
     --oauth_token=$OAUTH_TOKEN \
     --model_path=$MODEL_PATH \
     --platform='gcp' \
-    --prefix_params=$PREFIX_PARAMS \
+    --prefix_params="$PREFIX_PARAMS" \
     2>&1 | tee -a ${JOB_NAME}.log
 else
   gcloud ai-platform jobs submit training $JOB_NAME \
@@ -84,7 +84,7 @@ else
     --oauth_token=$OAUTH_TOKEN \
     --model_path=$MODEL_PATH \
     --platform='gcp' \
-    --prefix_params=$PREFIX_PARAMS \
+    --prefix_params="$PREFIX_PARAMS" \
     2>&1 | tee -a ${JOB_NAME}.log
 fi
 
