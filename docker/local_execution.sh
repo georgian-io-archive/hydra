@@ -35,6 +35,7 @@ docker run \
   --oauth_token=$OAUTH_TOKEN \
   --model_path=$MODEL_PATH \
   --prefix_params="$PREFIX_PARAMS" \
+  --platform='local' \
   2>&1 | tee ${JOB_NAME}.log
 
 # Move Log file to where the program is being called

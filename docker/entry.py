@@ -10,6 +10,7 @@ args_parser.add_argument('--commit_sha',required=True)
 args_parser.add_argument('--oauth_token',required=True)
 args_parser.add_argument('--prefix_params')
 args_parser.add_argument('--model_path',required=True)
+args_parser.add_argument('--platform',required=True)
 
 args = args_parser.parse_args()
 
@@ -20,10 +21,11 @@ os.chdir("project")
 subprocess.run(["git", "clone", "https://{}:x-oauth-basic@{}".format(args.oauth_token, args.git_url), "."])
 subprocess.run(["git", "checkout", args.commit_sha])
 
-# Move data from tmp storage to project/data
-if os.path.exists('./data'):
-    shutil.rmtree('./data')
-shutil.copytree('../data', "./data")
+# Move data from tmp storage to project/data for local execution
+if args.platform == 'local':
+    if os.path.exists('/home/project/data'):
+        shutil.rmtree('/home/project/data')
+    shutil.copytree("/home/data", "/home/project/data")
 
 subprocess.run(["conda", "env", "create", "-f", "environment.yml"])
 

@@ -57,19 +57,36 @@ echo "[Hydra Info] Using" $MACHINE_NAME
 echo "[Hydra Info] Using" $GPU_COUNT - $GPU_TYPE
 
 # Submit training job
-gcloud ai-platform jobs submit training $JOB_NAME \
-  --master-image-uri $IMAGE_URI \
-  --region=$REGION \
-  --scale-tier="CUSTOM" \
-  --master-machine-type=$MACHINE_NAME \
-  --master-accelerator count=${GPU_COUNT},type=${GPU_TYPE} \
-  -- \
-  --git_url=$GIT_URL \
-  --commit_sha=$COMMIT_SHA \
-  --oauth_token=$OAUTH_TOKEN \
-  --model_path=$MODEL_PATH \
-  --prefix_params=$PREFIX_PARAMS \
-  2>&1 | tee -a ${JOB_NAME}.log
+if [[ $GPU_COUNT == '0' ]]; then
+  gcloud ai-platform jobs submit training $JOB_NAME \
+    --master-image-uri $IMAGE_URI \
+    --region=$REGION \
+    --scale-tier="CUSTOM" \
+    --master-machine-type=$MACHINE_NAME \
+    -- \
+    --git_url=$GIT_URL \
+    --commit_sha=$COMMIT_SHA \
+    --oauth_token=$OAUTH_TOKEN \
+    --model_path=$MODEL_PATH \
+    --prefix_params=$PREFIX_PARAMS \
+    --platform='gcp' \
+    2>&1 | tee -a ${JOB_NAME}.log
+else
+  gcloud ai-platform jobs submit training $JOB_NAME \
+    --master-image-uri $IMAGE_URI \
+    --region=$REGION \
+    --scale-tier="CUSTOM" \
+    --master-machine-type=$MACHINE_NAME \
+    --master-accelerator count=${GPU_COUNT},type=${GPU_TYPE} \
+    -- \
+    --git_url=$GIT_URL \
+    --commit_sha=$COMMIT_SHA \
+    --oauth_token=$OAUTH_TOKEN \
+    --model_path=$MODEL_PATH \
+    --prefix_params=$PREFIX_PARAMS \
+    --platform='gcp' \
+    2>&1 | tee -a ${JOB_NAME}.log
+fi
 
 # Provide link for user to access the logs of their job on Google Cloud
 gcloud ai-platform jobs describe $JOB_NAME 2>&1 | tee -a ${JOB_NAME}.log
