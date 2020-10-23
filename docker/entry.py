@@ -1,4 +1,5 @@
 import os
+import shutil
 import argparse
 import subprocess
 
@@ -15,8 +16,14 @@ args = args_parser.parse_args()
 os.mkdir("project")
 os.chdir("project")
 
+# Clone and checkout the specified project repo from github
 subprocess.run(["git", "clone", "https://{}:x-oauth-basic@{}".format(args.oauth_token, args.git_url), "."])
 subprocess.run(["git", "checkout", args.commit_sha])
+
+# Move data from tmp storage to project/data
+if os.path.exists('./data'):
+    shutil.rmtree('./data')
+shutil.copytree('../data', "./data")
 
 subprocess.run(["conda", "env", "create", "-f", "environment.yml"])
 
@@ -24,8 +31,6 @@ subprocess.run(["conda", "env", "create", "-f", "environment.yml"])
 subprocess.run(["git", "clone", "https://{}:x-oauth-basic@{}".format(args.oauth_token, "github.com/georgianpartners/hydra"), "hydra"])
 subprocess.run(["git", "-C", "./hydra", "checkout", "5f1e82d"])
 subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "-e", "hydra/"])
-
-subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "mlflow"])
 
 for arg in args.prefix_params.split():
     [key, val] = arg.split('=')

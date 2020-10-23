@@ -8,7 +8,6 @@ VALID_COMMIT_SHA = "m1rr0r1ng"
 VALID_FILE_PATH = "ones/and/zer0es"
 VALID_GITHUB_TOKEN =  "Georgian"
 VALID_PREFIX_PARAMS = "{'epoch': 88}"
-VALID_GOOGLE_CREDENTIAL = 'google.json'
 
 CPU = 8
 MEMORY = 16
@@ -55,8 +54,7 @@ def test_train_local(mocker):
     result = runner.invoke(train,
         ['--model_path', VALID_MODEL_PATH,
          '--cloud', 'local',
-         '--github_token', VALID_GITHUB_TOKEN,
-         '--google_credential_path', VALID_GOOGLE_CREDENTIAL])
+         '--github_token', VALID_GITHUB_TOKEN])
 
     LocalPlatform.__init__.assert_called_once_with(
         model_path=VALID_MODEL_PATH,
@@ -64,7 +62,6 @@ def test_train_local(mocker):
         git_url=VALID_REPO_URL,
         commit_sha=VALID_COMMIT_SHA,
         github_token=VALID_GITHUB_TOKEN,
-        google_credential_path=VALID_GOOGLE_CREDENTIAL
     )
 
     LocalPlatform.train.assert_called_once_with()
@@ -107,8 +104,7 @@ def test_train_google_cloud(mocker):
          '--gpu_type', GPU_TYPE,
          '--region', REGION,
          '--image_tag', IMAGE_TAG,
-         '--image_url', IMAGE_URL,
-         '--google_credential_path', VALID_GOOGLE_CREDENTIAL])
+         '--image_url', IMAGE_URL])
 
     GoogleCloudPlatform.__init__.assert_called_once_with(
         model_path=VALID_MODEL_PATH,

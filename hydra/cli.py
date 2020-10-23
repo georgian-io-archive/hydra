@@ -28,7 +28,6 @@ def cli():
 @click.option('--gpu_type', default='NVIDIA_TESLA_P4', type=str, help="Accelerator GPU type")
 
 @click.option('--region', default='us-west2', type=str, help="Region of cloud server location")
-@click.option('--google_credential_path', default='', type=str, help="GOOGLE APPLICATION CREDENTIAL json file (Local model with hydra-dataset only)")
 
 # Docker Options
 @click.option('-t', '--image_tag', default='', type=str, help="Docker image tag name")
@@ -46,7 +45,6 @@ def train(
     gpu_count,
     gpu_type,
     region,
-    google_credential_path,
     image_tag,
     image_url,
     options):
@@ -68,8 +66,7 @@ def train(
             prefix_params=prefix_params,
             git_url=git_url,
             commit_sha=commit_sha,
-            github_token=github_token,
-            google_credential_path=google_credential_path)
+            github_token=github_token)
 
     elif cloud == 'gcp':
 

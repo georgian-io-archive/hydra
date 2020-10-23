@@ -68,7 +68,8 @@ gcloud ai-platform jobs submit training $JOB_NAME \
   --commit_sha=$COMMIT_SHA \
   --oauth_token=$OAUTH_TOKEN \
   --model_path=$MODEL_PATH \
-  --prefix_params=$PREFIX_PARAMS 2>&1 | tee -a ${JOB_NAME}.log
+  --prefix_params=$PREFIX_PARAMS \
+  2>&1 | tee -a ${JOB_NAME}.log
 
 # Provide link for user to access the logs of their job on Google Cloud
 gcloud ai-platform jobs describe $JOB_NAME 2>&1 | tee -a ${JOB_NAME}.log
