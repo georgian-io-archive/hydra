@@ -23,3 +23,14 @@ def get_gcp_dataset(project_name, bucket_name, source_path, destination_filename
     print("[PROJECT INFO] Blob {} downloaded to {}.".format(source_path, destination_path))
 
     return 0
+
+
+def save_gcp_result(project_name, bucket_name, source_path, destination_path):
+    client = storage.Client(project_name)
+    bucket = client.get_bucket(bucket_name)
+
+    bucket.blob(destination_path).upload_from_filename(filename=source_path)
+
+    print("[PROJECT INFO] {} saved to {}.".format(source_path, destination_path))
+
+    return 0
