@@ -9,6 +9,9 @@ from hydra.utils.git_repo import GitRepo
 def get_repo_url():
     git_url = subprocess.check_output("git config --get remote.origin.url", shell=True).decode("utf-8").strip()
     git_url = re.compile(r"https?://(www\.)?").sub("", git_url).strip().strip('/')
+    if len(git_url.split(":")) > 1:
+        git_url = git_url.split(":")[-1]
+        git_url = f"github.com/{git_url}"
     return git_url
 
 
