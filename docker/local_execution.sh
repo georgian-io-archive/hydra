@@ -9,7 +9,7 @@ while getopts 'g:c:o:m:p:a:' flag; do
     c) COMMIT_SHA="${OPTARG}" ;;
     o) OAUTH_TOKEN="${OPTARG}" ;;
     m) MODEL_PATH="${OPTARG}" ;;
-    p) PREFIX_PARAMS="${OPTARG}" ;;
+    p) OPTIONS="${OPTARG}" ;;
     *) print_usage
        exit 1 ;;
   esac
@@ -35,7 +35,7 @@ docker run \
   --oauth_token=$OAUTH_TOKEN \
   --model_path=$MODEL_PATH \
   --platform='local' \
-  --prefix_params="$PREFIX_PARAMS" \
+  --options="$OPTIONS" \
   2>&1 | tee ${JOB_NAME}.log
 
 # Move Log file to where the program is being called

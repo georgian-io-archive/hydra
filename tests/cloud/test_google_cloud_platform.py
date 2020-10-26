@@ -17,7 +17,7 @@ IMAGE_URI = "snow/reggie.ie"
 
 REGION = "us-west2"
 
-PREFIX_PARAMS = "epoch=88 lr=0.01"
+OPTIONS = "epoch=88 lr=0.01"
 
 SCRIPT_PATH = "camp/flog/gnaw"
 MACHINE_NAME = "macbook-pro"
@@ -37,7 +37,7 @@ def google_cloud_platform():
         image_tag=IMAGE_TAG,
         image_url=IMAGE_URI,
         region=REGION,
-        prefix_params=PREFIX_PARAMS
+        options=OPTIONS
     )
 
     gcp.script_path = SCRIPT_PATH
@@ -56,7 +56,7 @@ def test_train_local(mocker, google_cloud_platform):
     google_cloud_platform.run_command.assert_called_once_with(['sh', SCRIPT_PATH, '-g', GIT_URL,
         '-c', COMMIT_SHA, '-o', GITHUB_TOKEN, '-m', MODEL_PATH, '-r', REGION,
         '-t', IMAGE_TAG, '-u', IMAGE_URI, '-a', GPU_COUNT, '-y', GPU_TYPE,
-        '-n', MACHINE_NAME, '-p', PREFIX_PARAMS])
+        '-n', MACHINE_NAME, '-p', OPTIONS])
 
     assert result == 0
 

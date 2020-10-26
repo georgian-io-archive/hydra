@@ -19,7 +19,7 @@ class GoogleCloudPlatform(AbstractPlatform):
         gpu_count,
         image_tag,
         image_url,
-        prefix_params,
+        options,
         region):
 
         self.git_url = git_url
@@ -41,7 +41,7 @@ class GoogleCloudPlatform(AbstractPlatform):
 
         self.machine_type = self.find_machine()
 
-        super().__init__(model_path, prefix_params)
+        super().__init__(model_path, options)
 
 
     def find_machine(self):
@@ -71,7 +71,7 @@ class GoogleCloudPlatform(AbstractPlatform):
         command = ['sh', self.script_path, '-g', self.git_url, '-c', self.commit_sha,
             '-o', self.github_token, '-m', self.model_path, '-r', self.region,
             '-t', self.image_tag, '-u', self.image_url, '-a', self.gpu_count, '-y', self.gpu_type,
-            '-n', self.machine_type, '-p', self.prefix_params]
+            '-n', self.machine_type, '-p', self.options]
 
         self.run_command(command)
         return 0

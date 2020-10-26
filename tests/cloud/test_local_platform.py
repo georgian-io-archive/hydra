@@ -7,7 +7,7 @@ GIT_URL = "https://github.com/georgianpartners/hydra"
 COMMIT_SHA = "2012"
 GITHUB_TOKEN = "201014w828"
 
-PREFIX_PARAMS = "epoch=88 lr=0.01"
+OPTIONS = "epoch=88 lr=0.01"
 
 SCRIPT_PATH = "camp/flog/gnaw"
 
@@ -18,7 +18,7 @@ def local_platform():
         git_url=GIT_URL,
         commit_sha=COMMIT_SHA,
         github_token=GITHUB_TOKEN,
-        prefix_params=PREFIX_PARAMS
+        options=OPTIONS
     )
 
     lp.script_path = SCRIPT_PATH
@@ -34,6 +34,6 @@ def test_train_local(mocker, local_platform):
     result = local_platform.train()
 
     local_platform.run_command.assert_called_once_with(['sh', SCRIPT_PATH, '-g', GIT_URL,
-        '-c', COMMIT_SHA, '-o', GITHUB_TOKEN, '-m', MODEL_PATH, '-p', PREFIX_PARAMS])
+        '-c', COMMIT_SHA, '-o', GITHUB_TOKEN, '-m', MODEL_PATH, '-p', OPTIONS])
 
     assert result == 0

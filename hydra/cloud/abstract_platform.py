@@ -1,9 +1,9 @@
 import subprocess
 
 class AbstractPlatform():
-    def __init__(self, model_path, prefix_params):
+    def __init__(self, model_path, options):
         self.model_path = model_path
-        self.prefix_params = prefix_params
+        self.options = options
 
     def train(self):
         raise Exception("Not Implemented: Please implement this function in the subclass.")

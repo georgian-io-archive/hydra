@@ -78,16 +78,16 @@ def train(
             else:
                 raise Exception("Reached parts of Hydra that are either not implemented or recognized.")
 
-            options = train_data.get('env_vars', const.OPTIONS_DEFAULT)
+            options = train_data.get('options', const.OPTIONS_DEFAULT)
 
 
-    prefix_params = json_to_string(options)
-
-    print(prefix_params)
+    # options = json_to_string(options)
+    #
+    # print(options)
 
     if cloud == 'fast_local':
 
-        platform = FastLocalPlatform(model_path, prefix_params)
+        platform = FastLocalPlatform(model_path, options)
         platform.train()
         return 0
 
@@ -97,7 +97,7 @@ def train(
 
         platform = LocalPlatform(
             model_path=model_path,
-            prefix_params=prefix_params,
+            options=options,
             git_url=git_url,
             commit_sha=commit_sha,
             github_token=github_token)
@@ -116,7 +116,7 @@ def train(
             commit_sha=commit_sha,
             image_url=image_url,
             image_tag=image_tag,
-            prefix_params=prefix_params)
+            options=options)
 
     else:
         raise Exception("Reached parts of Hydra that are not yet implemented.")

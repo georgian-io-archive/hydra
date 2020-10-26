@@ -8,7 +8,7 @@ args_parser = argparse.ArgumentParser()
 args_parser.add_argument('--git_url',required=True)
 args_parser.add_argument('--commit_sha',required=True)
 args_parser.add_argument('--oauth_token',required=True)
-args_parser.add_argument('--prefix_params')
+args_parser.add_argument('--options')
 args_parser.add_argument('--model_path',required=True)
 args_parser.add_argument('--platform',required=True)
 
@@ -34,7 +34,7 @@ subprocess.run(["git", "clone", "https://{}:x-oauth-basic@{}".format(args.oauth_
 subprocess.run(["git", "-C", "./hydra", "checkout", "5bc8873"])
 subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "-e", "hydra/"])
 
-for arg in args.prefix_params.split():
+for arg in args.options.split():
     [key, val] = arg.split('=')
     os.putenv(key, val)
 

@@ -15,7 +15,7 @@ while getopts 'g:c:o:m:r:t:n:p:u:a:y:' flag; do
     a) GPU_COUNT="${OPTARG}" ;;
     y) GPU_TYPE="${OPTARG}" ;;
     n) MACHINE_NAME="${OPTARG}" ;;
-    p) PREFIX_PARAMS="${OPTARG}" ;;
+    p) OPTIONS="${OPTARG}" ;;
     *) print_usage
        exit 1 ;;
   esac
@@ -69,7 +69,7 @@ if [[ $GPU_COUNT == '0' ]]; then
     --oauth_token=$OAUTH_TOKEN \
     --model_path=$MODEL_PATH \
     --platform='gcp' \
-    --prefix_params="$PREFIX_PARAMS" \
+    --options="$OPTIONS" \
     2>&1 | tee -a ${JOB_NAME}.log
 else
   gcloud ai-platform jobs submit training $JOB_NAME \
@@ -84,7 +84,7 @@ else
     --oauth_token=$OAUTH_TOKEN \
     --model_path=$MODEL_PATH \
     --platform='gcp' \
-    --prefix_params="$PREFIX_PARAMS" \
+    --options="$OPTIONS" \
     2>&1 | tee -a ${JOB_NAME}.log
 fi
 
