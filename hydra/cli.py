@@ -1,8 +1,9 @@
 import os
 import yaml
 import click
-from hydra.utils.utils import json_to_string
+from hydra.utils.constants import *
 from hydra.utils.git import check_repo
+from hydra.utils.utils import json_to_string
 from hydra.cloud.local_platform import LocalPlatform
 from hydra.cloud.fast_local_platform import FastLocalPlatform
 from hydra.cloud.google_cloud_platform import GoogleCloudPlatform
@@ -18,7 +19,7 @@ def cli():
 # Generic options
 @click.option('-y', '--yaml_path', default=None, type=str)
 
-@click.option('-m', '--model_path', default='train.py', type=str)
+@click.option('-m', '--model_path', default=MODEL_PATH_DEFAULT, type=str)
 @click.option('--cloud', default='local', type=click.Choice(['fast_local','local', 'aws', 'gcp', 'azure'], case_sensitive=False))
 @click.option('--github_token', envvar='GITHUB_TOKEN') # Takes either an option or environment var
 
@@ -61,14 +62,15 @@ def train(
 
             if platform['provider'] in ['gcp', 'GCP']:
                 cloud = 'gcp'
-                region = platform['region']
+                region = platform.get('region', 'us-west2')
 
-                cpu_count = platform['cpu_count']
-                memory_size = platform['memory_size']
+                cpu_count = platform.get('cpu_count', 8)
+                memory_size = platform.get('memory_size', 8)
                 gpu_count = platform['gpu_count']
                 gpu_type = platform['gpu_type']
 
-                image_tag = data['docker_image']['tag']
+                image_tag = data.['docker_image'].get('tag')
+                image_url = data.['docker_image'].get('url')
 
             elif platform['provider'] in ['local', 'Local']:
                 cloud = 'local'
