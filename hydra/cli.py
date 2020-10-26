@@ -21,8 +21,8 @@ def cli():
 
 
 # Cloud specific options
-@click.option('--cpu', default=16, type=click.IntRange(0, 96), help='Number of CPU cores required')
-@click.option('--memory', default=8, type=click.IntRange(0, 624), help='GB of RAM required')
+@click.option('--cpu_count', default=16, type=click.IntRange(0, 96), help='Number of CPU cores required')
+@click.option('--memory_size', default=8, type=click.IntRange(0, 624), help='GB of RAM required')
 
 @click.option('--gpu_count', default=0, type=click.IntRange(0, 8), help="Number of accelerator GPUs")
 @click.option('--gpu_type', default='NVIDIA_TESLA_P4', type=str, help="Accelerator GPU type")
@@ -40,8 +40,8 @@ def train(
     model_path,
     cloud,
     github_token,
-    cpu,
-    memory,
+    cpu_count,
+    memory_size,
     gpu_count,
     gpu_type,
     region,
@@ -73,8 +73,8 @@ def train(
         platform = GoogleCloudPlatform(
             model_path=model_path,
             github_token=github_token,
-            cpu=cpu,
-            memory=memory,
+            cpu=cpu_count,
+            memory=memory_size,
             gpu_count=gpu_count,
             gpu_type=gpu_type,
             region=region,
