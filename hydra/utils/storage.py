@@ -13,7 +13,7 @@ def get_gcp_dataset(project_name, bucket_name, source_path, destination_filename
 
     if os.path.isfile(destination_path):
         print("[PROJECT INFO] {} already exists, skipping download...".format(destination_path))
-        return
+        return 0
 
     client = storage.Client(project_name)
     bucket = client.get_bucket(bucket_name)

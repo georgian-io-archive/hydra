@@ -7,11 +7,13 @@ class LocalPlatform(AbstractPlatform):
         self.git_url = git_url
         self.commit_sha = commit_sha
         self.github_token = github_token
+
+        self.script_path = os.path.join(os.path.dirname(__file__), '../../docker/local_execution.sh')
+
         super().__init__(model_path, prefix_params)
 
     def train(self):
-        execution_script_path = os.path.join(os.path.dirname(__file__), '../../docker/local_execution.sh')
-        command = ['sh', execution_script_path, '-g', self.git_url, '-c', self.commit_sha,
+        command = ['sh', self.script_path, '-g', self.git_url, '-c', self.commit_sha,
             '-o', self.github_token, '-m', self.model_path, '-p', self.prefix_params]
 
         self.run_command(command)
