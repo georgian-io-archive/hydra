@@ -36,6 +36,7 @@ subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "-e", "hydra/"]
 
 for arg in args.prefix_params.split():
     [key, val] = arg.split('=')
+    print([key, val])
     os.putenv(key, val)
 
 subprocess.run(["conda", "run", "-n", "hydra", "python3", args.model_path])
