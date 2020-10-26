@@ -87,6 +87,8 @@ def train(
 
     prefix_params = json_to_string(options)
 
+    print(prefix_params)
+
     if cloud == 'fast_local':
 
         platform = FastLocalPlatform(model_path, prefix_params)
