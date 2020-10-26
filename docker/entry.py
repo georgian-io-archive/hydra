@@ -34,10 +34,8 @@ subprocess.run(["git", "clone", "https://{}:x-oauth-basic@{}".format(args.oauth_
 subprocess.run(["git", "-C", "./hydra", "checkout", "5bc8873"])
 subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "-e", "hydra/"])
 
-for arg in args.prefix_params.split("|"):
+for arg in args.prefix_params.split():
     [key, val] = arg.split('=')
-    print(key)
-    print(val)
     os.putenv(key, val)
 
 subprocess.run(["conda", "run", "-n", "hydra", "python3", args.model_path])

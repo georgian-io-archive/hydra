@@ -17,7 +17,7 @@ def cli():
 
 @cli.command()
 # Generic options
-@click.option('-y', '--yaml_path', default=None, type=str)
+@click.option('-y', '--yaml_path', default='hydra.yaml', type=str)
 
 @click.option('-m', '--model_path', default=const.MODEL_PATH_DEFAULT, type=str)
 @click.option('--cloud', default=const.CLOUD_DEFAULT, type=click.Choice(['fast_local','local', 'aws', 'gcp', 'azure'], case_sensitive=False))
@@ -57,21 +57,21 @@ def train(
         with open(yaml_path) as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
 
-            model_path = data.get('entry_point', const.MODEL_PATH_DEFAULT)
+            model_path = data.get('entry_point', model_path)
             platform = data['platform']
 
-            provider = platform.get('provider', const.CLOUD_DEFAULT)
+            provider = platform.get('provider', cloud)
             if provider in ['gcp', 'GCP']:
                 cloud = 'gcp'
-                region = platform.get('region', const.REGION_DEFAULT)
+                region = platform.get('region', region)
 
-                cpu_count = platform.get('cpu_count', const.CPU_COUNT_DEFAULT)
-                memory_size = platform.get('memory_size', const.MEMORY_SIZE_DEFAULT)
-                gpu_count = platform.get('gpu_count', const.GPU_COUNT_DEFAULT)
-                gpu_type = platform.get('gpu_type', const.GPU_TYPE_DEFAULT)
+                cpu_count = platform.get('cpu_count', cpu_count)
+                memory_size = platform.get('memory_size', memory_size)
+                gpu_count = platform.get('gpu_count', gpu_count)
+                gpu_type = platform.get('gpu_type', gpu_type)
 
-                image_tag = data['docker_image'].get('tag', const.IMAGE_TAG_DEFAULT)
-                image_url = data['docker_image'].get('url', const.IMAGE_URL_DEFAULT)
+                image_tag = data['docker_image'].get('tag', image_tag)
+                image_url = data['docker_image'].get('url', image_url)
 
             elif provider in ['local', 'Local']:
                 cloud = 'local'
