@@ -91,9 +91,10 @@ fi
 # Provide link for user to access the logs of their job on Google Cloud
 gcloud ai-platform jobs describe $JOB_NAME 2>&1 | tee -a ${JOB_NAME}.log
 
-# Stream the logs
-gcloud ai-platform jobs stream-logs $JOB_NAME 2>&1 | tee -a ${JOB_NAME}.log
-
 # Move Log file to where the program is being called
 cd ${PROJECT_DIR} && mkdir -p tmp/hydra
-mv ${DIR}/${JOB_NAME}.log tmp/hydra/
+mv ${DIR}/${JOB_NAME}.log tmp/hydra/${JOB_NAME}.log
+
+# Stream the logs
+echo "Streaming logs... Feel free to use CLTR+C to abort - It will not affect your submitted jobs."
+gcloud ai-platform jobs stream-logs $JOB_NAME 2>&1 | tee -a tmp/hydra/${JOB_NAME}.log

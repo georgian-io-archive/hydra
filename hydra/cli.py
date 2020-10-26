@@ -1,4 +1,5 @@
 import os
+import yaml
 import click
 from hydra.utils.utils import json_to_string
 from hydra.utils.git import check_repo
@@ -15,10 +16,11 @@ def cli():
 
 @cli.command()
 # Generic options
-@click.option('-m', '--model_path', required=True, type=str)
-@click.option('--cloud', default='local', required=True, type=click.Choice(['fast_local','local', 'aws', 'gcp', 'azure'], case_sensitive=False))
-@click.option('--github_token', envvar='GITHUB_TOKEN') # Takes either an option or environment var
+@click.option('-y', '--yaml_path', default=None, type=str)
 
+@click.option('-m', '--model_path', default='train.py', type=str)
+@click.option('--cloud', default='local', type=click.Choice(['fast_local','local', 'aws', 'gcp', 'azure'], case_sensitive=False))
+@click.option('--github_token', envvar='GITHUB_TOKEN') # Takes either an option or environment var
 
 # Cloud specific options
 @click.option('--cpu_count', default=16, type=click.IntRange(0, 96), help='Number of CPU cores required')
@@ -37,6 +39,7 @@ def cli():
 @click.option('-o', '--options', default='{}', type=str, help='Environmental variables for the script')
 
 def train(
+    yaml_path,
     model_path,
     cloud,
     github_token,
@@ -48,6 +51,36 @@ def train(
     image_tag,
     image_url,
     options):
+
+    if os.path.isfile(yaml_path):
+        with open(yaml_path) as f:
+            data = yaml.load(f, Loader=yaml.FullLoader)
+
+            model_path = data['entry_point']
+            platform = data['platform']
+
+            if platform['provider'] in ['gcp', 'GCP']:
+                cloud = 'gcp'
+                region = platform['region']
+
+                cpu_count = platform['cpu_count']
+                memory_size = platform['memory_size']
+                gpu_count = platform['gpu_count']
+                gpu_type = platform['gpu_type']
+
+                image_tag = data['docker_image']['tag']
+
+            elif platform['provider'] in ['local', 'Local']:
+                cloud = 'local'
+
+            elif platform['provider'] == 'fast_local':
+                cloud = 'fast_local'
+
+            else:
+                raise Exception("Reached parts of Hydra that are either not implemented or recognized.")
+
+            options = data['env_vars']
+
 
     prefix_params = json_to_string(options)
 

@@ -4,3 +4,4 @@ pytest_mock==3.3.1
 GitPython==3.1.9
 gcloud
 docker==4.3.1
+pyyaml
