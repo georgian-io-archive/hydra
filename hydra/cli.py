@@ -56,33 +56,29 @@ def train(
     if os.path.isfile(yaml_path):
         with open(yaml_path) as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
+            train_data = data.get('train', '')
 
-            model_path = data.get('entry_point', model_path)
-            platform = data['platform']
+            model_path = train_data.get('model_path', model_path)
+            cloud = train_data.get('cloud', cloud).lower()
 
-            provider = platform.get('provider', cloud)
-            if provider in ['gcp', 'GCP']:
-                cloud = 'gcp'
-                region = platform.get('region', region)
+            if cloud == 'gcp':
+                region = train_data.get('region', region)
 
-                cpu_count = platform.get('cpu_count', cpu_count)
-                memory_size = platform.get('memory_size', memory_size)
-                gpu_count = platform.get('gpu_count', gpu_count)
-                gpu_type = platform.get('gpu_type', gpu_type)
+                cpu_count = train_data.get('cpu_count', cpu_count)
+                memory_size = train_data.get('memory_size', memory_size)
+                gpu_count = train_data.get('gpu_count', gpu_count)
+                gpu_type = train_data.get('gpu_type', gpu_type)
 
-                image_tag = data['docker_image'].get('tag', image_tag)
-                image_url = data['docker_image'].get('url', image_url)
+                image_tag = train_data.get('tag', image_tag)
+                image_url = train_data.get('url', image_url)
 
-            elif provider in ['local', 'Local']:
-                cloud = 'local'
-
-            elif provider == 'fast_local':
-                cloud = 'fast_local'
+            elif cloud == 'local' or cloud == 'fast_local':
+                pass
 
             else:
                 raise Exception("Reached parts of Hydra that are either not implemented or recognized.")
 
-            options = data.get('env_vars', const.OPTIONS_DEFAULT)
+            options = train_data.get('env_vars', const.OPTIONS_DEFAULT)
 
 
     prefix_params = json_to_string(options)
