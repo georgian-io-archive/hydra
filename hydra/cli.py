@@ -80,47 +80,48 @@ def train(
 
             options = train_data.get('options', const.OPTIONS_DEFAULT)
 
+    options_list = json.loads(options)
+    if isinstance(options_list, dict):
+        options_list = [options_list]
 
-    # options = json_to_string(options)
-    #
-    # print(options)
+    for options in options_list:
 
-    if cloud == 'fast_local':
+        if cloud == 'fast_local':
 
-        platform = FastLocalPlatform(model_path, options)
+            platform = FastLocalPlatform(model_path, options)
+            platform.train()
+            continue
+
+        git_url, commit_sha = check_repo(github_token)
+
+        if cloud == 'local':
+
+            platform = LocalPlatform(
+                model_path=model_path,
+                options=options,
+                git_url=git_url,
+                commit_sha=commit_sha,
+                github_token=github_token)
+
+        elif cloud == 'gcp':
+
+            platform = GoogleCloudPlatform(
+                model_path=model_path,
+                github_token=github_token,
+                cpu=cpu_count,
+                memory=memory_size,
+                gpu_count=gpu_count,
+                gpu_type=gpu_type,
+                region=region,
+                git_url=git_url,
+                commit_sha=commit_sha,
+                image_url=image_url,
+                image_tag=image_tag,
+                options=options)
+
+        else:
+            raise Exception("Reached parts of Hydra that are not yet implemented.")
+
         platform.train()
-        return 0
-
-    git_url, commit_sha = check_repo(github_token)
-
-    if cloud == 'local':
-
-        platform = LocalPlatform(
-            model_path=model_path,
-            options=options,
-            git_url=git_url,
-            commit_sha=commit_sha,
-            github_token=github_token)
-
-    elif cloud == 'gcp':
-
-        platform = GoogleCloudPlatform(
-            model_path=model_path,
-            github_token=github_token,
-            cpu=cpu_count,
-            memory=memory_size,
-            gpu_count=gpu_count,
-            gpu_type=gpu_type,
-            region=region,
-            git_url=git_url,
-            commit_sha=commit_sha,
-            image_url=image_url,
-            image_tag=image_tag,
-            options=options)
-
-    else:
-        raise Exception("Reached parts of Hydra that are not yet implemented.")
-
-    platform.train()
 
     return 0
