@@ -31,7 +31,7 @@ subprocess.run(["conda", "env", "create", "-f", "environment.yml"])
 
 # Temporary: Install hydra directly from github
 subprocess.run(["git", "clone", "https://{}:x-oauth-basic@{}".format(args.oauth_token, "github.com/georgianpartners/hydra"), "hydra"])
-subprocess.run(["git", "-C", "./hydra", "checkout", "32a4735"])
+subprocess.run(["git", "-C", "./hydra", "checkout", "4b9d0f3"])
 subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "-e", "hydra/"])
 
 for arg in args.options.split():
