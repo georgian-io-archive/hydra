@@ -4,7 +4,7 @@ import json
 import click
 import hydra.utils.constants as const
 from hydra.utils.git import check_repo
-from hydra.utils.utils import dict_to_string, dict_product
+from hydra.utils.utils import dict_to_string, inflate_options
 from hydra.cloud.local_platform import LocalPlatform
 from hydra.cloud.fast_local_platform import FastLocalPlatform
 from hydra.cloud.google_cloud_platform import GoogleCloudPlatform
@@ -54,8 +54,11 @@ def train(
     image_url,
     options):
 
+    # If YAML config file available to supplement the command line arguments
     if os.path.isfile(yaml_path):
         with open(yaml_path) as f:
+            print("[Hydra Info]: Loading run info from {}...".format(yaml_path))
+
             data = yaml.load(f, Loader=yaml.FullLoader)
             train_data = data.get('train', '')
 
@@ -79,25 +82,22 @@ def train(
             else:
                 raise Exception("Reached parts of Hydra that are either not implemented or recognized.")
 
-            # Either a list of dict or dict
             options_list = train_data.get('options', const.OPTIONS_DEFAULT)
+    # Read the options for run from CIL
     else:
-        # Either a json list of dict or json dict
         options_list = json.loads(options)
 
     if isinstance(options_list, dict):
         options_list = [options_list]
 
-    for options in options_list:
+    options_list_inflated = inflate_options(options_list)
 
-        options_list_inflated = dict_product(options)
-        options = dict_to_string(options_list_inflated)
+    print("\n[Hydra Info]: Executing experiments with the following options: \n {}\n".format(options_list_inflated))
 
-        for i in range(5):
-            print("------------------------------------------------------------")
-        print(options)
-        for i in range(5):
-            print("------------------------------------------------------------")
+    for i, options in enumerate(options_list_inflated):
+        options = dict_to_string(options)
+
+        print("\n[Hydra Info]: Runnning experiment #{} with the following options: \n {}\n".format(i, options))
 
         if cloud == 'fast_local':
 

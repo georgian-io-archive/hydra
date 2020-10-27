@@ -1,7 +1,16 @@
 from itertools import product
 
 
-def dict_product(dict):
+def inflate_options(dictionary_list):
+    dictionary_list_inflated = []
+
+    for dictionary in dictionary_list:
+        dictionary_list_inflated += dict_product(dictionary)
+
+    return dictionary_list_inflated
+
+
+def dict_product(dictionary):
     """ Uppack {"name": "cool-exp", "lr": [0.01, 0.001]} to list of cartesian products
     [{"name": "cool-exp", "lr": 0.01}, {"name": "cool-exp", "lr": 0.001}]
     """
