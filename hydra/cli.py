@@ -4,7 +4,7 @@ import json
 import click
 import hydra.utils.constants as const
 from hydra.utils.git import check_repo
-from hydra.utils.utils import dict_to_string
+from hydra.utils.utils import dict_to_string, dict_product
 from hydra.cloud.local_platform import LocalPlatform
 from hydra.cloud.fast_local_platform import FastLocalPlatform
 from hydra.cloud.google_cloud_platform import GoogleCloudPlatform
@@ -79,15 +79,26 @@ def train(
             else:
                 raise Exception("Reached parts of Hydra that are either not implemented or recognized.")
 
-            options = train_data.get('options', const.OPTIONS_DEFAULT)
+            # Either a list of dict or dict
+            options_list = train_data.get('options', const.OPTIONS_DEFAULT)
+    else:
+        # Either a json list of dict or json dict
+        options_list = json.loads(options)
 
-    options_list = json.loads(options)
     if isinstance(options_list, dict):
         options_list = [options_list]
 
     for options in options_list:
-        options = dict_to_string(options)
 
+        options_list_inflated = dict_product(options)
+        options = dict_to_string(options_list_inflated)
+
+        for i in range(5)
+            print("------------------------------------------------------------")
+        print(options)
+        for i in range(5)
+            print("------------------------------------------------------------")
+            
         if cloud == 'fast_local':
 
             platform = FastLocalPlatform(model_path, options)
