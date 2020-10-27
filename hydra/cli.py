@@ -93,12 +93,12 @@ def train(
         options_list_inflated = dict_product(options)
         options = dict_to_string(options_list_inflated)
 
-        for i in range(5)
+        for i in range(5):
             print("------------------------------------------------------------")
         print(options)
-        for i in range(5)
+        for i in range(5):
             print("------------------------------------------------------------")
-            
+
         if cloud == 'fast_local':
 
             platform = FastLocalPlatform(model_path, options)
