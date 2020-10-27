@@ -85,6 +85,7 @@ def train(
         options_list = [options_list]
 
     for options in options_list:
+        options = json_to_string(options)
 
         if cloud == 'fast_local':
 
