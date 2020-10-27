@@ -28,6 +28,7 @@ JOB_NAME="job_${DATE}_id_${HASH}"
 # Build and run image
 docker build -t hydra_image .
 docker run \
+  --rm \
   -v "$PROJECT_DIR/data":/home/data \
   hydra_image:latest \
   --git_url=$GIT_URL \
