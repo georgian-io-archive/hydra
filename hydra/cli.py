@@ -4,7 +4,7 @@ import json
 import click
 import hydra.utils.constants as const
 from hydra.utils.git import check_repo
-from hydra.utils.utils import json_to_string
+from hydra.utils.utils import dict_to_string
 from hydra.cloud.local_platform import LocalPlatform
 from hydra.cloud.fast_local_platform import FastLocalPlatform
 from hydra.cloud.google_cloud_platform import GoogleCloudPlatform
@@ -86,7 +86,7 @@ def train(
         options_list = [options_list]
 
     for options in options_list:
-        options = json_to_string(options)
+        options = dict_to_string(options)
 
         if cloud == 'fast_local':
 

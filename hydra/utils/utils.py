@@ -1,11 +1,7 @@
-import json
-from collections import OrderedDict
-
-def json_to_string(packet):
+def dict_to_string(packet):
     params = ""
 
-    od = json.loads(packet, object_pairs_hook=OrderedDict)
-    for key, value in od.items():
+    for key, value in packet.items():
         params += key + "=" + str(value) + " "
 
     return params.strip()
