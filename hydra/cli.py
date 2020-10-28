@@ -20,25 +20,25 @@ def cli():
 # Generic options
 @click.option('-y', '--yaml_path', default='hydra.yaml', type=str)
 
-@click.option('-m', '--model_path', default=const.MODEL_PATH_DEFAULT, type=str)
-@click.option('--cloud', default=const.CLOUD_DEFAULT, type=click.Choice(['fast_local','local', 'aws', 'gcp', 'azure'], case_sensitive=False))
+@click.option('-m', '--model_path', default=None, type=str)
+@click.option('--cloud', default=None, type=click.Choice(['fast_local','local', 'aws', 'gcp', 'azure'], case_sensitive=False))
 @click.option('--github_token', envvar='GITHUB_TOKEN') # Takes either an option or environment var
 
 # Cloud specific options
-@click.option('--cpu_count', default=const.CPU_COUNT_DEFAULT, type=click.IntRange(0, 96), help='Number of CPU cores required')
-@click.option('--memory_size', default=const.MEMORY_SIZE_DEFAULT, type=click.IntRange(0, 624), help='GB of RAM required')
+@click.option('--cpu_count', default=None, type=click.IntRange(0, 96), help='Number of CPU cores required')
+@click.option('--memory_size', default=None, type=click.IntRange(0, 624), help='GB of RAM required')
 
-@click.option('--gpu_count', default=const.GPU_COUNT_DEFAULT, type=click.IntRange(0, 8), help="Number of accelerator GPUs")
-@click.option('--gpu_type', default=const.GPU_TYPE_DEFAULT, type=str, help="Accelerator GPU type")
+@click.option('--gpu_count', default=None, type=click.IntRange(0, 8), help="Number of accelerator GPUs")
+@click.option('--gpu_type', default=None, type=str, help="Accelerator GPU type")
 
-@click.option('--region', default=const.REGION_DEFAULT, type=str, help="Region of cloud server location")
+@click.option('--region', default=None, type=str, help="Region of cloud server location")
 
 # Docker Options
-@click.option('-t', '--image_tag', default=const.IMAGE_TAG_DEFAULT, type=str, help="Docker image tag name")
-@click.option('-u', '--image_url', default=const.IMAGE_URL_DEFAULT, type=str, help="Url to the docker image on cloud")
+@click.option('-t', '--image_tag', default=None, type=str, help="Docker image tag name")
+@click.option('-u', '--image_url', default=None, type=str, help="Url to the docker image on cloud")
 
 # Env variable of model file
-@click.option('-o', '--options', default=const.OPTIONS_DEFAULT, type=str, help='Environmental variables for the script')
+@click.option('-o', '--options', default=None, type=str, help='Environmental variables for the script')
 
 def train(
     yaml_path,
@@ -62,19 +62,19 @@ def train(
             data = yaml.load(f, Loader=yaml.FullLoader)
             train_data = data.get('train', '')
 
-            model_path = train_data.get('model_path', model_path)
-            cloud = train_data.get('cloud', cloud).lower()
+            model_path = train_data.get('model_path', const.MODEL_PATH_DEFAULT) if model_path is None else model_path
+            cloud = train_data.get('cloud', const.CLOUD_DEFAULT).lower() if cloud is None else cloud
 
             if cloud == 'gcp':
-                region = train_data.get('region', region)
+                region = train_data.get('region', const.REGION_DEFAULT) if region is None else region
 
-                cpu_count = train_data.get('cpu_count', cpu_count)
-                memory_size = train_data.get('memory_size', memory_size)
-                gpu_count = train_data.get('gpu_count', gpu_count)
-                gpu_type = train_data.get('gpu_type', gpu_type)
+                cpu_count = train_data.get('cpu_count', const.CPU_COUNT_DEFAULT) if cpu_count is None else cpu_count
+                memory_size = train_data.get('memory_size', const.MEMORY_SIZE_DEFAULT) if memory_size is None else memory_size
+                gpu_count = train_data.get('gpu_count', const.GPU_COUNT_DEFAULT) if gpu_count is None else gpu_count
+                gpu_type = train_data.get('gpu_type', const.GPU_TYPE_DEFAULT) if gpu_type is None else gpu_type
 
-                image_tag = train_data.get('tag', image_tag)
-                image_url = train_data.get('url', image_url)
+                image_tag = train_data.get('tag', const.IMAGE_TAG_DEFAULT) if image_tag is None else image_tag
+                image_url = train_data.get('url', const.IMAGE_URL_DEFAULT) if image_url is None else image_url
 
             elif cloud == 'local' or cloud == 'fast_local':
                 pass
@@ -82,9 +82,23 @@ def train(
             else:
                 raise Exception("Reached parts of Hydra that are either not implemented or recognized.")
 
-            options_list = train_data.get('options', const.OPTIONS_DEFAULT)
+            options_list = train_data.get('options', const.OPTIONS_DEFAULT) if options is None else options
     # Read the options for run from CIL
     else:
+        model_path = const.MODEL_PATH_DEFAULT if model_path is None else model_path
+        cloud = const.CLOUD_DEFAULT if cloud is None else cloud
+
+        region = const.REGION_DEFAULT if region is None else region
+
+        cpu_count = const.CPU_COUNT_DEFAULT if cpu_count is None else cpu_count
+        memory_size = const.MEMORY_SIZE_DEFAULT if memory_size is None else memory_size
+        gpu_count = const.GPU_COUNT_DEFAULT if gpu_count is None else gpu_count
+        gpu_type = const.GPU_TYPE_DEFAULT if gpu_type is None else gpu_type
+
+        image_tag = const.IMAGE_TAG_DEFAULT if image_tag is None else image_tag
+        image_url = const.IMAGE_URL_DEFAULT if image_url is None else image_url
+
+        options = const.OPTIONS_DEFAULT if options is None else options
         options_list = json.loads(options)
 
     if isinstance(options_list, dict):
