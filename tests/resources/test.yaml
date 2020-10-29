@@ -1,0 +1,14 @@
+train:
+  model_path: "d3bug.py"
+  cloud: "local"
+  cpu_count: 8
+  memory_size: 16
+  gpu_count: 1
+  gpu_type: 'NVIDIA Tesla P4'
+  region: 'us-west2'
+  image_tag: "default"
+  options:
+    - epoch: 88
+      lr: 0.01
+    - epoch: [88, 888]
+      lr: [0.1, 1]

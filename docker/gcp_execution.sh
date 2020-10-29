@@ -15,7 +15,7 @@ while getopts 'g:c:o:m:r:t:n:p:u:a:y:' flag; do
     a) GPU_COUNT="${OPTARG}" ;;
     y) GPU_TYPE="${OPTARG}" ;;
     n) MACHINE_NAME="${OPTARG}" ;;
-    p) PREFIX_PARAMS="${OPTARG}" ;;
+    p) OPTIONS="${OPTARG}" ;;
     *) print_usage
        exit 1 ;;
   esac
@@ -57,22 +57,40 @@ echo "[Hydra Info] Using" $MACHINE_NAME
 echo "[Hydra Info] Using" $GPU_COUNT - $GPU_TYPE
 
 # Submit training job
-gcloud ai-platform jobs submit training $JOB_NAME \
-  --master-image-uri $IMAGE_URI \
-  --region=$REGION \
-  --scale-tier="CUSTOM" \
-  --master-machine-type=$MACHINE_NAME \
-  --master-accelerator count=${GPU_COUNT},type=${GPU_TYPE} \
-  -- \
-  --git_url=$GIT_URL \
-  --commit_sha=$COMMIT_SHA \
-  --oauth_token=$OAUTH_TOKEN \
-  --model_path=$MODEL_PATH \
-  --prefix_params=$PREFIX_PARAMS 2>&1 | tee -a ${JOB_NAME}.log
+if [[ $GPU_COUNT == '0' ]]; then
+  gcloud ai-platform jobs submit training $JOB_NAME \
+    --master-image-uri $IMAGE_URI \
+    --region=$REGION \
+    --scale-tier="CUSTOM" \
+    --master-machine-type=$MACHINE_NAME \
+    -- \
+    --git_url=$GIT_URL \
+    --commit_sha=$COMMIT_SHA \
+    --oauth_token=$OAUTH_TOKEN \
+    --model_path=$MODEL_PATH \
+    --platform='gcp' \
+    --options="$OPTIONS" \
+    2>&1 | tee -a ${JOB_NAME}.log
+else
+  gcloud ai-platform jobs submit training $JOB_NAME \
+    --master-image-uri $IMAGE_URI \
+    --region=$REGION \
+    --scale-tier="CUSTOM" \
+    --master-machine-type=$MACHINE_NAME \
+    --master-accelerator count=${GPU_COUNT},type=${GPU_TYPE} \
+    -- \
+    --git_url=$GIT_URL \
+    --commit_sha=$COMMIT_SHA \
+    --oauth_token=$OAUTH_TOKEN \
+    --model_path=$MODEL_PATH \
+    --platform='gcp' \
+    --options="$OPTIONS" \
+    2>&1 | tee -a ${JOB_NAME}.log
+fi
 
 # Provide link for user to access the logs of their job on Google Cloud
 gcloud ai-platform jobs describe $JOB_NAME 2>&1 | tee -a ${JOB_NAME}.log
 
 # Move Log file to where the program is being called
 cd ${PROJECT_DIR} && mkdir -p tmp/hydra
-mv ${DIR}/${JOB_NAME}.log tmp/hydra/
+mv ${DIR}/${JOB_NAME}.log tmp/hydra/${JOB_NAME}.log

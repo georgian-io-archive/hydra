@@ -1,7 +1,7 @@
 import pytest
 import warnings
 import pytest_mock
-from hydra.git_repo import *
+from hydra.utils.git_repo import *
 
 VALID_MULTIPLE_FILES = ["shopify.inc", "clickup.tm"]
 VALID_MULTIPLE_COMMITS = ["m1rr0r1ng"]
