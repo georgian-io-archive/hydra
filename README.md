@@ -1,18 +1,20 @@
 # hydra
 A cloud-agnostic Machine Learning Platform that will enable Data Scientists to run multiple experiments, perform hyper parameter optimization, evaluate results and serve models (batch/realtime) while still maintaining a uniform development UX across cloud environments 
 
-## Installation Guide
-
-hydra is not hosted on a python package server yet. So for now we install it by cloning the repo
-
+## Installation
+To install Hydra using PyPI, run the following command
 ```
-git clone git@github.com:georgianpartners/hydra.git
-
-cd hydra
-pip3 install -e .
+$ pip install hydra-ml
 ```
-
-Check the current hydra version using
+To install Hydra using GitHub source, first clone Hydra using `git` :
 ```
-hydra --version
+$ git clone https://github.com/georgianpartners/hydra
+```
+Then in the `hydra` repository that you cloned, run
+```
+$ python setup.py install
+```
+Check the current hydra version by running
+```
+$ hydra --version
 ```
