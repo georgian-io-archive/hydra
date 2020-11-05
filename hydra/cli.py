@@ -73,8 +73,8 @@ def train(
                 gpu_count = train_data.get('gpu_count', const.GPU_COUNT_DEFAULT) if gpu_count is None else gpu_count
                 gpu_type = train_data.get('gpu_type', const.GPU_TYPE_DEFAULT) if gpu_type is None else gpu_type
 
-                image_tag = train_data.get('tag', const.IMAGE_TAG_DEFAULT) if image_tag is None else image_tag
-                image_url = train_data.get('url', const.IMAGE_URL_DEFAULT) if image_url is None else image_url
+                image_tag = train_data.get('image_tag', const.IMAGE_TAG_DEFAULT) if image_tag is None else image_tag
+                image_url = train_data.get('image_url', const.IMAGE_URL_DEFAULT) if image_url is None else image_url
 
             elif cloud == 'local' or cloud == 'fast_local':
                 pass
