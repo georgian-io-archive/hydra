@@ -3,6 +3,8 @@ import shutil
 import argparse
 import subprocess
 
+CONDA_ENV_NAME = "hydra"
+
 args_parser = argparse.ArgumentParser()
 
 args_parser.add_argument('--git_url',required=True)
@@ -27,7 +29,7 @@ if args.platform == 'local':
         shutil.rmtree('/home/project/data')
     shutil.copytree("/home/data", "/home/project/data")
 
-subprocess.run(["conda", "env", "create", "-f", "environment.yml"])
+subprocess.run(["conda", "env", "create", "-n", CONDA_ENV_NAME, "-f", "environment.yml"])
 
 # Temporary: Install hydra directly from github
 subprocess.run(["git", "clone", "https://{}:x-oauth-basic@{}".format(args.oauth_token, "github.com/georgianpartners/hydra"), "hydra"])
@@ -38,4 +40,4 @@ for arg in args.options.split():
     [key, val] = arg.split('=')
     os.putenv(key, val)
 
-subprocess.run(["conda", "run", "-n", "hydra", "python3", args.model_path])
+subprocess.run(["conda", "run", "-n", CONDA_ENV_NAME, "python3", args.model_path])
