@@ -30,11 +30,7 @@ if args.platform == 'local':
     shutil.copytree("/home/data", "/home/project/data")
 
 subprocess.run(["conda", "env", "create", "-n", CONDA_ENV_NAME, "-f", "environment.yml"])
-
-# Temporary: Install hydra directly from github
-subprocess.run(["git", "clone", "https://{}:x-oauth-basic@{}".format(args.oauth_token, "github.com/georgianpartners/hydra"), "hydra"])
-subprocess.run(["git", "-C", "./hydra", "checkout", "2a3ba9e"])
-subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "-e", "hydra/"])
+subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "hydra-ml"])
 
 for arg in args.options.split():
     [key, val] = arg.split('=')
