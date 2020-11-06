@@ -48,7 +48,7 @@ Entrypoint for Hydra CLI
 
 ```
 $ hydra --version
-$ hyra --help
+$ hydra --help
 ```
 
 ##### Options
