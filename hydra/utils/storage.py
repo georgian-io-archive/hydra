@@ -1,16 +1,11 @@
 import os
 from google.cloud import storage
 
-def get_gcp_dataset(project_name, bucket_name, source_path, destination_filename):
+def get_gcp_dataset(project_name, bucket_name, source_path, destination_path):
     # project_name = "your-project-name"
     # bucket_name = "your-bucket-name"
     # source_path = "storage-object-name"
-    # destination_filename = "file-name"
-    destination_path = os.path.join('data', destination_filename)
-
-    if not os.path.exists('data'):
-        os.makedirs('data')
-
+    # destination_filepath = "file-path"
     if os.path.isfile(destination_path):
         print("[PROJECT INFO] {} already exists, skipping download...".format(destination_path))
         return 0
