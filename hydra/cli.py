@@ -98,7 +98,7 @@ def train(
         image_tag = const.IMAGE_TAG_DEFAULT if image_tag is None else image_tag
         image_url = const.IMAGE_URL_DEFAULT if image_url is None else image_url
 
-        options = const.OPTIONS_DEFAULT if options is None else options
+        options = str(const.OPTIONS_DEFAULT) if options is None else options
         options_list = json.loads(options)
 
     if isinstance(options_list, dict):
