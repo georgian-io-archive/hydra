@@ -19,7 +19,7 @@ def cli():
 @cli.command()
 # Generic options
 @click.option('-y', '--yaml_path', default='hydra.yaml', type=str)
-
+@click.option('-p', '--project_name', default=None, type=str)
 @click.option('-m', '--model_path', default=None, type=str)
 @click.option('--cloud', default=None, type=click.Choice(['fast_local','local', 'aws', 'gcp', 'azure'], case_sensitive=False))
 @click.option('--github_token', envvar='GITHUB_TOKEN') # Takes either an option or environment var
@@ -42,6 +42,7 @@ def cli():
 
 def train(
     yaml_path,
+    project_name,
     model_path,
     cloud,
     github_token,
@@ -62,9 +63,11 @@ def train(
             data = yaml.load(f, Loader=yaml.FullLoader)
             train_data = data.get('train', '')
 
+            if project_name is None:
+                raise Exception("project_name option is required")
+
             model_path = train_data.get('model_path', const.MODEL_PATH_DEFAULT) if model_path is None else model_path
             cloud = train_data.get('cloud', const.CLOUD_DEFAULT).lower() if cloud is None else cloud
-
             if cloud == 'gcp':
                 region = train_data.get('region', const.REGION_DEFAULT) if region is None else region
 
