@@ -8,6 +8,8 @@ from hydra.utils.utils import dict_to_string, inflate_options
 from hydra.cloud.local_platform import LocalPlatform
 from hydra.cloud.fast_local_platform import FastLocalPlatform
 from hydra.cloud.google_cloud_platform import GoogleCloudPlatform
+from hydra.cloud.aws_platform import AWSPlatform
+
 from hydra.version import __version__
 
 @click.group()
@@ -62,13 +64,14 @@ def train(
 
             data = yaml.load(f, Loader=yaml.FullLoader)
             train_data = data.get('train', '')
+            project_name = train_data.get('project_name')
 
             if project_name is None:
                 raise Exception("project_name option is required")
 
             model_path = train_data.get('model_path', const.MODEL_PATH_DEFAULT) if model_path is None else model_path
             cloud = train_data.get('cloud', const.CLOUD_DEFAULT).lower() if cloud is None else cloud
-            if cloud == 'gcp':
+            if cloud == 'gcp' or cloud == 'aws':
                 region = train_data.get('region', const.REGION_DEFAULT) if region is None else region
 
                 cpu_count = train_data.get('cpu_count', const.CPU_COUNT_DEFAULT) if cpu_count is None else cpu_count
@@ -112,12 +115,11 @@ def train(
     print("\n[Hydra Info]: Executing experiments with the following options: \n {}\n".format(options_list_inflated))
 
     for i, options in enumerate(options_list_inflated):
-        options = dict_to_string(options)
+        options_str = dict_to_string(options)
 
         print("\n[Hydra Info]: Runnning experiment #{} with the following options: \n {}\n".format(i, options))
 
         if cloud == 'fast_local':
-
             platform = FastLocalPlatform(model_path, options)
             platform.train()
             continue
@@ -125,16 +127,14 @@ def train(
         git_url, commit_sha = check_repo(github_token)
 
         if cloud == 'local':
-
             platform = LocalPlatform(
                 model_path=model_path,
-                options=options,
+                options=options_str,
                 git_url=git_url,
                 commit_sha=commit_sha,
                 github_token=github_token)
 
         elif cloud == 'gcp':
-
             platform = GoogleCloudPlatform(
                 model_path=model_path,
                 github_token=github_token,
@@ -147,7 +147,23 @@ def train(
                 commit_sha=commit_sha,
                 image_url=image_url,
                 image_tag=image_tag,
-                options=options)
+                options=options_str)
+
+        elif cloud == 'aws':
+            platform = AWSPlatform(
+                model_path=model_path,
+                project_name=project_name,
+                github_token=github_token,
+                cpu=cpu_count,
+                memory=memory_size,
+                gpu_count=gpu_count,
+                region=region,
+                git_url=git_url,
+                commit_sha=commit_sha,
+                image_url=image_url,
+                image_tag=image_tag,
+                options=options
+            )
 
         else:
             raise Exception("Reached parts of Hydra that are not yet implemented.")

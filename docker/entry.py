@@ -7,12 +7,12 @@ CONDA_ENV_NAME = "hydra"
 
 args_parser = argparse.ArgumentParser()
 
-args_parser.add_argument('--git_url',required=True)
-args_parser.add_argument('--commit_sha',required=True)
-args_parser.add_argument('--oauth_token',required=True)
+args_parser.add_argument('--git_url', default=os.environ.get('HYDRA_GIT_URL'))
+args_parser.add_argument('--commit_sha', default=os.environ.get('HYDRA_COMMIT_SHA'))
+args_parser.add_argument('--oauth_token', default=os.environ.get('HYDRA_OAUTH_TOKEN'))
 args_parser.add_argument('--options')
-args_parser.add_argument('--model_path',required=True)
-args_parser.add_argument('--platform',required=True)
+args_parser.add_argument('--model_path', default=os.environ.get('HYDRA_MODEL_PATH'))
+args_parser.add_argument('--platform', default=os.environ.get('HYDRA_PLATFORM'))
 
 args = args_parser.parse_args()
 
@@ -32,8 +32,9 @@ if args.platform == 'local':
 subprocess.run(["conda", "env", "create", "-n", CONDA_ENV_NAME, "-f", "environment.yml"])
 subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "hydra-ml"])
 
-for arg in args.options.split():
-    [key, val] = arg.split('=')
-    os.putenv(key, val)
+if args.options is not None:
+    for arg in args.options.split():
+        [key, val] = arg.split('=')
+        os.putenv(key, val)
 
 subprocess.run(["conda", "run", "-n", CONDA_ENV_NAME, "python3", args.model_path])
