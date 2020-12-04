@@ -40,4 +40,4 @@ jobs:
         pytest
     - name: Display test coverage
       run: |
-        pytest --cov=. --cov-fail-under=75 tests/
+        pytest --cov=. --cov-fail-under=50 tests/
