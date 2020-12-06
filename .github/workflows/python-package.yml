@@ -41,4 +41,4 @@ jobs:
     - name: Display test coverage
       run: |
         # pytest --cov=. --cov-fail-under=50 tests/
-        pytest tests/test_cli.py
+        pytest tests/test_git_repo.py
