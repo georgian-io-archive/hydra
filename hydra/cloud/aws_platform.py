@@ -31,7 +31,7 @@ class AWSPlatform(AbstractPlatform):
 
         self.cpu = cpu
         self.memory = memory
-        self.gpu_count = str(gpu_count)
+        self.gpu_count = gpu_count
 
         self.region = region
 
@@ -54,12 +54,21 @@ class AWSPlatform(AbstractPlatform):
         jobDefName = f"job-def-{jobName}"
         jobQueue = 'hydra-ml-queue'
         environment_list = []
+        resrc_req_list = []
 
         for k, v in self.options.items():
             environment_list.append(
                 {
                     "name": k,
                     "value": str(v)
+                }
+            )
+
+        if self.gpu_count > 0:
+            resrc_req_list.append(
+                {
+                    "type": "GPU",
+                    "value": str(self.gpu_count)
                 }
             )
 
@@ -71,10 +80,11 @@ class AWSPlatform(AbstractPlatform):
                 'vcpus': self.cpu,
                 'memory': self.memory*1000,
                 'privileged': True,
-                'environment': environment_list
+                'environment': environment_list,
+                'resourceRequirements': resrc_req_list
             }
         )
-        print(resp)
+
         submitJobResponse = self.batch.submit_job(
             jobName=jobName,
             jobQueue=jobQueue,
