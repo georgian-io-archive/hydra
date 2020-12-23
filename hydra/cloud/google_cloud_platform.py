@@ -36,8 +36,8 @@ class GoogleCloudPlatform(AbstractPlatform):
 
         self.region = region
 
-        self.script_path = os.path.join(os.path.dirname(__file__), '../../docker/gcp_execution.sh')
-        self.machines_json = os.path.join(os.path.dirname(__file__), '../../resources/gcp_machines.json')
+        self.script_path = os.path.join(os.path.dirname(__file__), '../docker/gcp_execution.sh')
+        self.machines_json = os.path.join(os.path.dirname(__file__), '../resources/gcp_machines.json')
 
         self.machine_type = self.find_machine()
 
