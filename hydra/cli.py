@@ -120,7 +120,10 @@ def train(
         print("\n[Hydra Info]: Runnning experiment #{} with the following options: \n {}\n".format(i, options))
 
         if cloud == 'fast_local':
-            platform = FastLocalPlatform(model_path, options)
+            platform = FastLocalPlatform(
+                model_path=model_path,
+                options=options_str,
+            )
             platform.train()
             continue
 
