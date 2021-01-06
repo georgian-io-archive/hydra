@@ -8,7 +8,7 @@ class LocalPlatform(AbstractPlatform):
         self.commit_sha = commit_sha
         self.github_token = github_token
 
-        self.script_path = os.path.join(os.path.dirname(__file__), '../../docker/local_execution.sh')
+        self.script_path = os.path.join(os.path.dirname(__file__), '../docker/local_execution.sh')
 
         super().__init__(model_path, options)
 
