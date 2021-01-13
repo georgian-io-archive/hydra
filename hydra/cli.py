@@ -111,20 +111,29 @@ def train(
         options_list = [options_list]
 
     options_list_inflated = inflate_options(options_list)
+    git_url, commit_sha = check_repo(github_token)
+
+    hydra_core_configs = {
+        'HYDRA_PLATFORM': cloud,
+        'HYDRA_GIT_URL': git_url,
+        'HYDRA_COMMIT_SHA': commit_sha,
+        'HYDRA_OAUTH_TOKEN': github_token,
+        'HYDRA_MODEL_PATH': model_path
+    }
 
     print("\n[Hydra Info]: Executing experiments with the following options: \n {}\n".format(options_list_inflated))
 
     for i, options in enumerate(options_list_inflated):
         options_str = dict_to_string(options)
+        hydra_core_configs_str = dict_to_string(hydra_core_configs)
 
         print("\n[Hydra Info]: Runnning experiment #{} with the following options: \n {}\n".format(i, options))
 
         if cloud == 'fast_local':
-            platform = FastLocalPlatform(model_path, options_str)
+            platform = FastLocalPlatform(model_path,
+                                         f"{options_str} {hydra_core_configs_str}")
             platform.train()
             continue
-
-        git_url, commit_sha = check_repo(github_token)
 
         if cloud == 'local':
             platform = LocalPlatform(
