@@ -37,4 +37,10 @@ if args.options is not None:
         [key, val] = arg.split('=')
         os.putenv(key, val)
 
+os.putenv('HYDRA_PLATFORM', args.platform)
+os.putenv('HYDRA_GIT_URL', args.git_url)
+os.putenv('HYDRA_COMMIT_SHA', args.commit_sha)
+os.putenv('HYDRA_OAUTH_TOKEN', args.oauth_token)
+os.putenv('HYDRA_MODEL_PATH', args.model_path)
+
 subprocess.run(["conda", "run", "-n", CONDA_ENV_NAME, "python3", args.model_path])
