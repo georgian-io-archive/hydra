@@ -88,7 +88,7 @@ def train(
             else:
                 raise Exception("Reached parts of Hydra that are either not implemented or recognized.")
 
-            options_list = train_data.get('options', const.OPTIONS_DEFAULT) if options is None else options
+            options_list = json.loads(train_data.get('options', const.OPTIONS_DEFAULT) if options is None else options)
     # Read the options for run from CIL
     else:
         model_path = const.MODEL_PATH_DEFAULT if model_path is None else model_path
