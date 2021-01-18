@@ -47,9 +47,8 @@ def test_check_repo_success(mocker):
 
 
 def test_check_repo_empty_token():
-    with pytest.raises(ValueError) as err:
+    with pytest.raises(ValueError, match="GITHUB_TOKEN") as err:
         check_repo(None)
-    assert "GITHUB_TOKEN" in str(err.value)
 
 
 def test_check_repo_untracked(mocker):
@@ -58,7 +57,7 @@ def test_check_repo_untracked(mocker):
     def fail_test(self):
         return True
 
-    with pytest.raises(ValueError) as err:
+    with pytest.raises(ValueError, match="Hydra is not being called in the root of a git repo.") as err:
 
         mocker.patch(
             "hydra.utils.git_repo.GitRepo.is_empty",
@@ -82,8 +81,6 @@ def test_check_repo_untracked(mocker):
         )
 
         check_repo(VALID_GITHUB_TOKEN)
-
-    assert "Hydra is not being called in the root of a git repo." == str(err.value)
 
 
 def test_check_repo_modified(mocker):
@@ -92,7 +89,7 @@ def test_check_repo_modified(mocker):
     def fail_test(self):
         return True
 
-    with pytest.raises(RuntimeError) as err:
+    with pytest.raises(RuntimeError, match="Some modified files are not staged for commit.") as err:
 
         mocker.patch(
             "hydra.utils.git_repo.GitRepo.is_empty",
@@ -116,8 +113,6 @@ def test_check_repo_modified(mocker):
         )
 
         check_repo(VALID_GITHUB_TOKEN)
-
-    assert "Some modified files are not staged for commit." == str(err.value)
 
 
 def test_check_repo_uncommitted(mocker):
@@ -126,7 +121,7 @@ def test_check_repo_uncommitted(mocker):
     def fail_test(self):
         return True
 
-    with pytest.raises(RuntimeError) as err:
+    with pytest.raises(RuntimeError, match="Some staged files are not commited.") as err:
 
         mocker.patch(
             "hydra.utils.git_repo.GitRepo.is_empty",
@@ -150,8 +145,6 @@ def test_check_repo_uncommitted(mocker):
         )
 
         check_repo(VALID_GITHUB_TOKEN)
-
-    assert "Some staged files are not commited." == str(err.value)
 
 
 def test_check_repo_unsynced(mocker):
@@ -160,7 +153,7 @@ def test_check_repo_unsynced(mocker):
     def fail_test(self):
         return True
 
-    with pytest.raises(RuntimeError) as err:
+    with pytest.raises(RuntimeError, match="Some commits are not pushed to the remote repo.") as err:
 
         mocker.patch(
             "hydra.utils.git_repo.GitRepo.is_empty",
@@ -184,8 +177,6 @@ def test_check_repo_unsynced(mocker):
         )
 
         check_repo(VALID_GITHUB_TOKEN)
-
-    assert "Some commits are not pushed to the remote repo."== str(err.value)
 
 
 def test_check_repo_untracked(mocker):
@@ -194,7 +185,7 @@ def test_check_repo_untracked(mocker):
     def fail_test(self):
         return True
 
-    with pytest.warns(UserWarning) as record:
+    with pytest.warns(UserWarning, match="Some files are not tracked by git.") as record:
 
         mocker.patch(
             "hydra.utils.git_repo.GitRepo.is_empty",
@@ -219,4 +210,3 @@ def test_check_repo_untracked(mocker):
 
         check_repo(VALID_GITHUB_TOKEN)
 
-    assert "Some files are not tracked by git." == record[0].message.args[0]
