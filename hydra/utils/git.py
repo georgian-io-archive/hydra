@@ -22,26 +22,26 @@ def get_commit_sha():
 
 def check_repo(github_token, repo=None):
     if github_token == None:
-        raise Exception("GITHUB_TOKEN not found in environment variable or as argument.")
+        raise ValueError("GITHUB_TOKEN not found in environment variable or as argument.")
 
     if repo is None:
         repo = git.Repo(os.getcwd())
         repo = GitRepo(repo)
 
     if repo.is_empty():
-        raise Exception("Hydra is not being called in the root of a git repo.")
+        raise ValueError("Hydra is not being called in the root of a git repo.")
 
     if repo.is_untracked():
         warnings.warn("Some files are not tracked by git.", UserWarning)
 
     if repo.is_modified():
-        raise Exception("Some modified files are not staged for commit.")
+        raise RuntimeError("Some modified files are not staged for commit.")
 
     if repo.is_uncommitted():
-        raise Exception("Some staged files are not commited.")
+        raise RuntimeError("Some staged files are not commited.")
 
     if repo.is_unsynced():
-        raise Exception("Some commits are not pushed to the remote repo.")
+        raise RuntimeError("Some commits are not pushed to the remote repo.")
 
     repo_url = get_repo_url()
     commit_sha = get_commit_sha()
