@@ -47,7 +47,7 @@ def test_check_repo_success(mocker):
 
 
 def test_check_repo_empty_token():
-    with pytest.raises(Exception) as err:
+    with pytest.raises(ValueError) as err:
         check_repo(None)
     assert "GITHUB_TOKEN" in str(err.value)
 
@@ -58,7 +58,7 @@ def test_check_repo_untracked(mocker):
     def fail_test(self):
         return True
 
-    with pytest.raises(Exception) as err:
+    with pytest.raises(ValueError) as err:
 
         mocker.patch(
             "hydra.utils.git_repo.GitRepo.is_empty",
@@ -92,7 +92,7 @@ def test_check_repo_modified(mocker):
     def fail_test(self):
         return True
 
-    with pytest.raises(Exception) as err:
+    with pytest.raises(RuntimeError) as err:
 
         mocker.patch(
             "hydra.utils.git_repo.GitRepo.is_empty",
@@ -126,7 +126,7 @@ def test_check_repo_uncommitted(mocker):
     def fail_test(self):
         return True
 
-    with pytest.raises(Exception) as err:
+    with pytest.raises(RuntimeError) as err:
 
         mocker.patch(
             "hydra.utils.git_repo.GitRepo.is_empty",
@@ -160,7 +160,7 @@ def test_check_repo_unsynced(mocker):
     def fail_test(self):
         return True
 
-    with pytest.raises(Exception) as err:
+    with pytest.raises(RuntimeError) as err:
 
         mocker.patch(
             "hydra.utils.git_repo.GitRepo.is_empty",
