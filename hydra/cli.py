@@ -67,7 +67,7 @@ def train(
             project_name = train_data.get('project_name')
 
             if project_name is None:
-                raise Exception("project_name option is required")
+                raise ValueError("project_name option is required")
 
             model_path = train_data.get('model_path', const.MODEL_PATH_DEFAULT) if model_path is None else model_path
             cloud = train_data.get('cloud', const.CLOUD_DEFAULT).lower() if cloud is None else cloud
@@ -86,7 +86,7 @@ def train(
                 pass
 
             else:
-                raise Exception("Reached parts of Hydra that are either not implemented or recognized.")
+                raise RuntimeError("Reached parts of Hydra that are either not implemented or recognized.")
 
             options_list = train_data.get('options', const.OPTIONS_DEFAULT) if options is None else options
             if type(options_list) is str:
@@ -177,7 +177,7 @@ def train(
             )
 
         else:
-            raise Exception("Reached parts of Hydra that are not yet implemented.")
+            raise RuntimeError("Reached parts of Hydra that are not yet implemented.")
 
         platform.train()
 

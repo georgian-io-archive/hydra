@@ -62,7 +62,7 @@ class GoogleCloudPlatform(AbstractPlatform):
                     optimal_machine['price'] = price
 
         if optimal_machine['machine_type'] is None:
-            raise Exception("Machine type satisfying {} vCPU and {} GB memory is not found!".format(self.cpu, self.memory))
+            raise ValueError("Machine type satisfying {} vCPU and {} GB memory is not found!".format(self.cpu, self.memory))
         else:
             return optimal_machine['machine_type']
 
