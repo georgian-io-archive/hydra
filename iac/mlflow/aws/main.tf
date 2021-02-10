@@ -21,3 +21,7 @@ resource "aws_s3_bucket" "default" {
   bucket = "terraform-3289094859043859340853"
   acl    = "private"
 }
+
+resource "aws_ecs_cluster" "cluster-23423432423113" {
+    name = "cluster-23423432423113"
+}
