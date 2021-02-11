@@ -82,7 +82,36 @@ resource "aws_ecs_service" "service" {
 
   network_configuration {
     subnets = ["subnet-9d2ccbfa"]
+    security_groups = ["sg-0fb24e7b891957130"]
     assign_public_ip = true
   }
 }
 
+resource "aws_security_group" "mlflow_sg" {
+  name  = "mlflow-sg"
+  vpc_id = "vpc-1d5f9e7b"
+
+  ingress {
+    from_port = 80
+    to_port = 80
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    from_port = 5000
+    to_port = 5000
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
