@@ -4,26 +4,26 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_db_instance" "default" {
+resource "aws_db_instance" "mlflowdb" {
   allocated_storage     = 20
   storage_type          = "gp2"
   engine                = "mysql"
   engine_version        = "5.7"
   instance_class        = "db.t2.micro"
   name                  = "mlflowdb"
-  username              = "<ENTER YOUR USERNAME HERE>"
-  password              = "<ENTER YOUR PASSWORD HERE>"
+  username              = "sifjsdifjosfdson"
+  password              = "3982ryu923hudsflw47SADSA32"
   parameter_group_name  = "default.mysql5.7"
   skip_final_snapshot   = true
 }
 
-resource "aws_s3_bucket" "default" {
+resource "aws_s3_bucket" "terraform_3289094859043859340853" {
   bucket  = "terraform-3289094859043859340853"
   acl     = "private"
 }
 
-resource "aws_ecs_cluster" "cluster-23423432423113" {
-  name = "cluster-23423432423113"
+resource "aws_ecs_cluster" "cluster_23423432423113" {
+  name = "cluster_23423432423113"
 }
 
 resource "aws_ecs_task_definition" "task" {
@@ -32,7 +32,7 @@ resource "aws_ecs_task_definition" "task" {
   [
     {
       "name" : "task",
-      "image" : "${}",
+      "image" : "823217009914.dkr.ecr.us-east-1.amazonaws.com/hydra-mlflow-server-aws:latest",
       "essential" : true,
       "memory" : 512,
       "cpu" : 256
@@ -43,11 +43,11 @@ resource "aws_ecs_task_definition" "task" {
   network_mode              = "awsvpc"
   memory                    = 512
   cpu                       = 256
-  execution_role_arn        = ""
+  execution_role_arn        = aws_iam_role.hydra_mlflow_ecs_tasks.arn
 }
 
-resource "aws_iam_role" "hydra-mlflow-ecs-tasks" {
-  name                = "hydra-mlflow-ecs-tasks"
+resource "aws_iam_role" "hydra_mlflow_ecs_tasks" {
+  name                = "hydra_mlflow_ecs_tasks"
   assume_role_policy  = data.aws_iam_policy_document.assume_role_policy.json
 }
 
@@ -61,3 +61,28 @@ data "aws_iam_policy_document" "assume_role_policy" {
     }
   }
 }
+
+resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRolePolicy" {
+  for_each = toset([
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
+    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+    "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+  ])
+
+  role        = aws_iam_role.hydra_mlflow_ecs_tasks.name
+  policy_arn  = each.value
+}
+
+resource "aws_ecs_service" "service" {
+  name            = "service"
+  cluster         = aws_ecs_cluster.cluster_23423432423113.id
+  task_definition = aws_ecs_task_definition.task.arn
+  launch_type     = "FARGATE"
+  desired_count   = 1
+
+  network_configuration {
+    subnets = ["subnet-9d2ccbfa"]
+    assign_public_ip = true
+  }
+}
+
