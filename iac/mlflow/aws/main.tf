@@ -4,19 +4,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_db_instance" "mlflowdb" {
-  allocated_storage     = 20
-  storage_type          = "gp2"
-  engine                = "mysql"
-  engine_version        = "5.7"
-  instance_class        = "db.t2.micro"
-  name                  = "mlflowdb"
-  username              = "sifjsdifjosfdson"
-  password              = "3982ryu923hudsflw47SADSA32"
-  parameter_group_name  = "default.mysql5.7"
-  skip_final_snapshot   = true
-}
-
 resource "aws_s3_bucket" "terraform_3289094859043859340853" {
   bucket  = "terraform-3289094859043859340853"
   acl     = "private"
@@ -35,7 +22,15 @@ resource "aws_ecs_task_definition" "task" {
       "image" : "823217009914.dkr.ecr.us-east-1.amazonaws.com/hydra-mlflow-server-aws:latest",
       "essential" : true,
       "memory" : 512,
-      "cpu" : 256
+      "cpu" : 256,
+      "logConfiguration" : {
+        "logDriver" : "awslogs",
+        "options" : {
+          "awslogs-group" : "/ecs/mlflow-deploy-task",
+          "awslogs-region" : "us-east-1",
+          "awslogs-stream-prefix" : "ecs"
+        }
+      }
     }
   ]
   DEFINITION
@@ -43,6 +38,7 @@ resource "aws_ecs_task_definition" "task" {
   network_mode              = "awsvpc"
   memory                    = 512
   cpu                       = 256
+  task_role_arn             = aws_iam_role.hydra_mlflow_ecs_tasks.arn
   execution_role_arn        = aws_iam_role.hydra_mlflow_ecs_tasks.arn
 }
 
@@ -73,6 +69,71 @@ resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRolePolicy" {
   policy_arn  = each.value
 }
 
+resource "aws_security_group" "mlflow_sg" {
+  name    = "mlflow-sg"
+  vpc_id  = "vpc-dc395aa7"
+
+  ingress {
+    from_port         = 80
+    to_port           = 80
+    protocol          = "tcp"
+    cidr_blocks       = ["0.0.0.0/0"]
+    ipv6_cidr_blocks  = ["::/0"]
+  }
+
+  ingress {
+    from_port         = 5000
+    to_port           = 5000
+    protocol          = "tcp"
+    cidr_blocks       = ["0.0.0.0/0"]
+    ipv6_cidr_blocks  = ["::/0"]
+  }
+
+  ingress {
+    from_port         = 3306
+    to_port           = 3306
+    protocol          = "tcp"
+    cidr_blocks       = ["0.0.0.0/0"]
+    ipv6_cidr_blocks  = ["::/0"]
+  }
+
+  ingress {
+    from_port         = 443
+    to_port           = 443
+    protocol          = "tcp"
+    cidr_blocks       = ["0.0.0.0/0"]
+    ipv6_cidr_blocks  = ["::/0"]
+  }
+
+  egress {
+    from_port         = 0
+    to_port           = 0
+    protocol          = "-1"
+    cidr_blocks       = ["0.0.0.0/0"]
+    ipv6_cidr_blocks  = ["::/0"]
+  }
+}
+
+resource "aws_db_subnet_group" "default" {
+  name        = "hydra-mlflow-db-subnet"
+  subnet_ids  = ["subnet-9d2ccbfa", "subnet-6510d04b"]
+}
+
+resource "aws_db_instance" "mlflowdb" {
+  allocated_storage       = 20
+  storage_type            = "gp2"
+  engine                  = "mysql"
+  engine_version          = "5.7"
+  instance_class          = "db.t2.micro"
+  name                    = "mlflowdb"
+  username                = "sifjsdifjosfdson"
+  password                = "3982ryu923hudsflw47SADSA32"
+  db_subnet_group_name    = aws_db_subnet_group.default.name
+  vpc_security_group_ids  = [aws_security_group.mlflow_sg.id]
+  parameter_group_name    = "default.mysql5.7"
+  skip_final_snapshot     = true
+}
+
 resource "aws_ecs_service" "service" {
   name            = "service"
   cluster         = aws_ecs_cluster.cluster_23423432423113.id
@@ -81,37 +142,8 @@ resource "aws_ecs_service" "service" {
   desired_count   = 1
 
   network_configuration {
-    subnets = ["subnet-9d2ccbfa"]
-    security_groups = ["sg-0fb24e7b891957130"]
-    assign_public_ip = true
-  }
-}
-
-resource "aws_security_group" "mlflow_sg" {
-  name  = "mlflow-sg"
-  vpc_id = "vpc-1d5f9e7b"
-
-  ingress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    from_port = 5000
-    to_port = 5000
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    subnets           = ["subnet-9d2ccbfa"]
+    security_groups   = [aws_security_group.mlflow_sg.id]
+    assign_public_ip  = true
   }
 }
