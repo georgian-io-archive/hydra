@@ -1,4 +1,7 @@
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 823217009914.dkr.ecr.us-east-1.amazonaws.com
+registry_id=$(aws ecr describe-registry | python3 -c "import sys, json; print(json.load(sys.stdin)['registryId'])")
+region="us-east-1"
+
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "${registry_id}.dkr.ecr.${region}.amazonaws.com"
 docker build -t hydra-mlflow-server-aws .
-docker tag hydra-mlflow-server-aws:latest 823217009914.dkr.ecr.us-east-1.amazonaws.com/hydra-mlflow-server-aws:latest
-docker push 823217009914.dkr.ecr.us-east-1.amazonaws.com/hydra-mlflow-server-aws:latest
+docker tag hydra-mlflow-server-aws:latest "${registry_id}.dkr.ecr.${region}.amazonaws.com/hydra-mlflow-server-aws:latest"
+docker push "${registry_id}.dkr.ecr.${region}.amazonaws.com/hydra-mlflow-server-aws:latest"
