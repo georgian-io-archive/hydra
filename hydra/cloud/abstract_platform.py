@@ -5,6 +5,9 @@ class AbstractPlatform():
         self.model_path = model_path
         self.options = options
 
+    def copy_project_to_cloud(self):
+        raise NotImplementedError("Not Implemented: Please implement this function in the subclass.")
+
     def train(self):
         raise NotImplementedError("Not Implemented: Please implement this function in the subclass.")
 

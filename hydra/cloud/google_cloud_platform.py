@@ -20,7 +20,9 @@ class GoogleCloudPlatform(AbstractPlatform):
         image_tag,
         image_url,
         options,
-        region):
+        region,
+        code_snapshot_uuid
+    ):
 
         self.git_url = git_url
         self.commit_sha = commit_sha
@@ -43,6 +45,9 @@ class GoogleCloudPlatform(AbstractPlatform):
 
         super().__init__(model_path, options)
 
+    def copy_project_to_cloud(self):
+
+        pass
 
     def find_machine(self):
         machines = json.load(open(self.machines_json))
@@ -68,6 +73,7 @@ class GoogleCloudPlatform(AbstractPlatform):
 
 
     def train(self):
+
         command = ['sh', self.script_path, '-g', self.git_url, '-c', self.commit_sha,
             '-o', self.github_token, '-m', self.model_path, '-r', self.region,
             '-t', self.image_tag, '-u', self.image_url, '-a', self.gpu_count, '-y', self.gpu_type,

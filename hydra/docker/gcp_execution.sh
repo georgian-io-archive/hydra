@@ -33,7 +33,7 @@ JOB_NAME="job_${DATE}_id_${HASH}"
 
 if [[ $IMAGE_URI == '' ]]; then
   if [[ $IMAGE_TAG == '' ]]; then
-    export IMAGE_TAG=${JOB_NAME}
+    export IMAGE_TAG='master'
   fi
 
   # Export env variables to push docker image

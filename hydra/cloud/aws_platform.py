@@ -19,7 +19,9 @@ class AWSPlatform(AbstractPlatform):
             image_tag,
             image_url,
             options,
-            region):
+            region,
+            code_snapshot_uuid
+    ):
 
         self.project_name = project_name
         self.git_url = git_url

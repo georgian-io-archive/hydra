@@ -1,4 +1,5 @@
 import os
+import uuid
 import yaml
 import json
 import click
@@ -115,12 +116,15 @@ def train(
     options_list_inflated = inflate_options(options_list)
     git_url, commit_sha = check_repo(github_token)
 
+    code_snapshot_uuid = str(uuid.uuid1())
+
     hydra_core_configs = {
         'HYDRA_PLATFORM': cloud,
         'HYDRA_GIT_URL': git_url,
         'HYDRA_COMMIT_SHA': commit_sha,
         'HYDRA_OAUTH_TOKEN': github_token,
-        'HYDRA_MODEL_PATH': model_path
+        'HYDRA_MODEL_PATH': model_path,
+        'CODE_SNAPSHOT_UUID': code_snapshot_uuid
     }
 
     print("\n[Hydra Info]: Executing experiments with the following options: \n {}\n".format(options_list_inflated))
@@ -134,16 +138,16 @@ def train(
         if cloud == 'fast_local':
             platform = FastLocalPlatform(model_path,
                                          f"{options_str} {hydra_core_configs_str}")
-            platform.train()
-            continue
 
-        if cloud == 'local':
+        elif cloud == 'local':
             platform = LocalPlatform(
                 model_path=model_path,
                 options=options_str,
                 git_url=git_url,
                 commit_sha=commit_sha,
-                github_token=github_token)
+                github_token=github_token,
+                code_snapshot_uuid=code_snapshot_uuid
+            )
 
         elif cloud == 'gcp':
             platform = GoogleCloudPlatform(
@@ -158,7 +162,9 @@ def train(
                 commit_sha=commit_sha,
                 image_url=image_url,
                 image_tag=image_tag,
-                options=options_str)
+                options=options_str,
+                code_snapshot_uuid=code_snapshot_uuid
+            )
 
         elif cloud == 'aws':
             platform = AWSPlatform(
@@ -173,11 +179,14 @@ def train(
                 commit_sha=commit_sha,
                 image_url=image_url,
                 image_tag=image_tag,
-                options=options
+                options=options,
+                code_snapshot_uuid=code_snapshot_uuid
             )
 
         else:
             raise RuntimeError("Reached parts of Hydra that are not yet implemented.")
+
+        platform.copy_project_to_cloud()
 
         platform.train()
 
