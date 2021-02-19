@@ -71,7 +71,13 @@ class AWSPlatform(AbstractPlatform):
                 'vcpus': self.cpu,
                 'memory': self.memory*1000,
                 'privileged': True,
-                'environment': environment_list
+                'environment': environment_list,
+                'resourceRequirements': [
+                    {
+                        'value': self.gpu_count,
+                        'type': 'GPU'
+                    },
+                ]
             }
         )
         print(resp)
