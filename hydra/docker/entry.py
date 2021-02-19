@@ -3,8 +3,6 @@ import shutil
 import argparse
 import subprocess
 
-from hydra.utils.secrets import get_creds_for_gcp_mlflow
-
 CONDA_ENV_NAME = "hydra"
 
 args_parser = argparse.ArgumentParser()
@@ -32,23 +30,12 @@ if args.platform == 'local':
     shutil.copytree("/home/data", "/home/project/data")
 
 subprocess.run(["conda", "env", "create", "-n", CONDA_ENV_NAME, "-f", "environment.yml"])
-subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "hydra-ml==0.3.8"])
+subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "hydra-ml"])
 
 if args.options is not None:
     for arg in args.options.split():
         [key, val] = arg.split('=')
         os.putenv(key, val)
-
-mlflow_tracking_uri, mlflow_username,\
-    mlflow_pswd = "", "", ""
-
-if os.environ.get('HYDRA_PLATFORM') == 'gcp':
-    mlflow_tracking_uri, mlflow_username,\
-    mlflow_pswd = get_creds_for_gcp_mlflow()
-
-os.putenv('MLFLOW_TRACKING_URI', mlflow_tracking_uri)
-os.putenv('MLFLOW_USERNAME', mlflow_username)
-os.putenv('MLFLOW_PASSWORD', mlflow_pswd)
 
 os.putenv('HYDRA_PLATFORM', args.platform)
 os.putenv('HYDRA_GIT_URL', args.git_url)
