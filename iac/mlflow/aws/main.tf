@@ -1,33 +1,54 @@
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance
 
 provider "aws" {
-  region = "us-east-1"
+  region = var.aws_region
 }
 
-resource "aws_s3_bucket" "terraform_3289094859043859340853" {
-  bucket  = "terraform-3289094859043859340853"
+resource "aws_s3_bucket" "mlflow_artifact_store" {
+  bucket  = var.mlflow_artifact_store
   acl     = "private"
 }
 
-resource "aws_ecs_cluster" "cluster_23423432423113" {
-  name = "cluster_23423432423113"
+resource "aws_ecs_cluster" "mlflow_server_cluster" {
+  name = var.mlflow_server_cluster
 }
 
-resource "aws_ecs_task_definition" "task" {
-  family = "task"
+resource "aws_ecr_repository" "mlflow_container_repository" {
+  name = var.mlflow_container_repository
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
+resource "aws_cloudwatch_log_group" "mlflow_ecs_task_log_group" {
+  name = var.cloudwatch_log_group
+}
+
+
+
+resource "aws_ecs_task_definition" "mlflow_ecs_task_definition" {
+  family                = var.mlflow_ecs_task_family
   container_definitions = <<DEFINITION
   [
     {
-      "name" : "task",
-      "image" : "823217009914.dkr.ecr.us-east-1.amazonaws.com/hydra-mlflow-server-aws:latest",
+      "name" : "${var.container_name}",
+      "image" : "${aws_ecr_repository.mlflow_container_repository.repository_url}:latest",
       "essential" : true,
-      "memory" : 512,
+      "memory" : 1024,
       "cpu" : 256,
+      "portMappings" : [
+        {
+          "containerPort" : 5000,
+          "hostPort" : 5000,
+          "protocol" : "tcp"
+        }
+      ],
       "logConfiguration" : {
         "logDriver" : "awslogs",
         "options" : {
-          "awslogs-group" : "/ecs/mlflow-deploy-task",
-          "awslogs-region" : "us-east-1",
+          "awslogs-group" : "${aws_cloudwatch_log_group.mlflow_ecs_task_log_group.name}",
+          "awslogs-region" : "${var.aws_region}",
           "awslogs-stream-prefix" : "ecs"
         }
       }
@@ -36,14 +57,14 @@ resource "aws_ecs_task_definition" "task" {
   DEFINITION
   requires_compatibilities  = ["FARGATE"]
   network_mode              = "awsvpc"
-  memory                    = 512
-  cpu                       = 256
+  memory                    = 2048
+  cpu                       = 1024
   task_role_arn             = aws_iam_role.hydra_mlflow_ecs_tasks.arn
   execution_role_arn        = aws_iam_role.hydra_mlflow_ecs_tasks.arn
 }
 
 resource "aws_iam_role" "hydra_mlflow_ecs_tasks" {
-  name                = "hydra_mlflow_ecs_tasks"
+  name                = var.mlflow_ecs_tasks_role
   assume_role_policy  = data.aws_iam_policy_document.assume_role_policy.json
 }
 
@@ -59,19 +80,14 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRolePolicy" {
-  for_each = toset([
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
-    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-    "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-  ])
-
   role        = aws_iam_role.hydra_mlflow_ecs_tasks.name
-  policy_arn  = each.value
+  count       = length(var.ecs_task_iam_policy_arn)
+  policy_arn  = var.ecs_task_iam_policy_arn[count.index]
 }
 
 resource "aws_security_group" "mlflow_sg" {
-  name    = "mlflow-sg"
-  vpc_id  = "vpc-dc395aa7"
+  name    = var.mlflow_sg
+  vpc_id  = var.vpc_id
 
   ingress {
     from_port         = 80
@@ -115,7 +131,7 @@ resource "aws_security_group" "mlflow_sg" {
 }
 
 resource "aws_db_subnet_group" "default" {
-  name        = "hydra-mlflow-db-subnet"
+  name        = var.rds_subnet_group_name
   subnet_ids  = ["subnet-9d2ccbfa", "subnet-6510d04b"]
 }
 
@@ -126,20 +142,56 @@ resource "aws_db_instance" "mlflowdb" {
   engine_version          = "5.7"
   instance_class          = "db.t2.micro"
   name                    = "mlflowdb"
-  username                = "sifjsdifjosfdson"
-  password                = "3982ryu923hudsflw47SADSA32"
+  username                = var.db_username
+  password                = var.db_password
   db_subnet_group_name    = aws_db_subnet_group.default.name
   vpc_security_group_ids  = [aws_security_group.mlflow_sg.id]
   parameter_group_name    = "default.mysql5.7"
   skip_final_snapshot     = true
 }
 
+resource "aws_lb" "hydra_mlflow_lb" {
+  name                = var.alb_name
+  internal            = false
+  load_balancer_type  = "application"
+  security_groups     = [aws_security_group.mlflow_sg.id]
+  subnets             = ["subnet-6139fa4f", "subnet-9d2ccbfa"]
+
+  enable_deletion_protection = false
+}
+
+resource "aws_lb_target_group" "target_group" {
+  name          = "ecs-mlflow-lb-tg"
+  port          = 80
+  protocol      = "HTTP"
+  target_type   = "ip"
+  vpc_id        = var.vpc_id
+
+  depends_on = [aws_lb.hydra_mlflow_lb]
+}
+
+resource "aws_lb_listener" "lb_listener" {
+  load_balancer_arn = aws_lb.hydra_mlflow_lb.arn
+  port = 80
+
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.target_group.arn
+  }
+}
+
 resource "aws_ecs_service" "service" {
-  name            = "service"
-  cluster         = aws_ecs_cluster.cluster_23423432423113.id
-  task_definition = aws_ecs_task_definition.task.arn
+  name            = var.ecs_service_name
+  cluster         = aws_ecs_cluster.mlflow_server_cluster.id
+  task_definition = aws_ecs_task_definition.mlflow_ecs_task_definition.arn
   launch_type     = "FARGATE"
-  desired_count   = 1
+  desired_count   = 2
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.target_group.arn
+    container_name = var.container_name
+    container_port = 5000
+  }
 
   network_configuration {
     subnets           = ["subnet-9d2ccbfa"]
@@ -147,3 +199,48 @@ resource "aws_ecs_service" "service" {
     assign_public_ip  = true
   }
 }
+
+resource "aws_appautoscaling_target" "ecs_autoscaling_target" {
+  max_capacity = 3
+  min_capacity = 2
+  resource_id = "service/${aws_ecs_cluster.mlflow_server_cluster.name}/${aws_ecs_service.service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "ecs_memory_autoscaling_policy" {
+  name = "memory-autoscale-mlflow"
+  policy_type = "TargetTrackingScaling"
+  resource_id = aws_appautoscaling_target.ecs_autoscaling_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_autoscaling_target.scalable_dimension
+  service_namespace = aws_appautoscaling_target.ecs_autoscaling_target.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+    }
+
+    target_value = 80
+  }
+}
+
+resource "aws_appautoscaling_policy" "ecs_cpu_autoscaling_policy" {
+  name = "cpu-autoscale-mlflow"
+  policy_type = "TargetTrackingScaling"
+  resource_id = aws_appautoscaling_target.ecs_autoscaling_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_autoscaling_target.scalable_dimension
+  service_namespace = aws_appautoscaling_target.ecs_autoscaling_target.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+
+    target_value = 80
+  }
+}
+
+
+
+# add load balancer
+# add autoscaling policy
