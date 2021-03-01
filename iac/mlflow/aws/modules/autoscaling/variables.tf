@@ -21,13 +21,11 @@ variable "ecs_service_name" {
 variable "memory_autoscaling_policy_name" {
   description = "Name of memory autoscaling policy"
   type        = string
-  default     = "memory-autoscale-mlflow"
 }
 
 variable "cpu_autoscaling_policy_name" {
   description = "Name of CPU autoscaling policy"
   type        = string
-  default     = "cpu-autoscale-mlflow"
 }
 
 variable "cpu_autoscale_in_cooldown" {
