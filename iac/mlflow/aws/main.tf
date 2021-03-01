@@ -43,6 +43,7 @@ module "load_balancing" {
   lb_target_group     = var.lb_target_group
   vpc_id              = var.vpc_id
 }
+
 module "storage" {
   source                          = "./modules/storage"
   allocated_storage               = var.allocated_storage
@@ -77,8 +78,8 @@ module "task_deployment" {
   execution_role_arn          = module.permissions.mlflow_ecs_tasks_role_arn
   mlflow_ecs_task_family      = var.mlflow_ecs_task_family
   mlflow_server_cluster       = var.mlflow_server_cluster
-  s3_bucket_folder            = module.storage.s3_bucket
-  s3_bucket_name              = var.artifact_store_folder
+  s3_bucket_folder            = var.artifact_store_folder
+  s3_bucket_name              = module.storage.s3_bucket
   task_cpu                    = var.task_cpu
   task_memory                 = var.task_memory
   task_role_arn               = module.permissions.mlflow_ecs_tasks_role_arn
