@@ -4,6 +4,12 @@ provider "aws" {
   region = var.aws_region
 }
 
+module "container_repository" {
+  source                      = "./modules/container_repository"
+  mlflow_container_repository = var.mlflow_container_repository
+  scan_on_push                = true
+}
+
 module "task_deployment" {
   source                      = "./modules/task_deployment"
   admin_password_arn          = aws_secretsmanager_secret.admin_password.arn
@@ -15,7 +21,7 @@ module "task_deployment" {
   db_host                     = aws_db_instance.mlflowdb_tf_test.address
   db_name                     = aws_db_instance.mlflowdb_tf_test.name
   db_port                     = "3306"
-  docker_image                = "${aws_ecr_repository.mlflow_container_repository.repository_url}:latest"
+  docker_image                = "${module.container_repository.container_repository_url}:latest"
   ecs_service_name            = var.ecs_service_name
   ecs_service_security_groups = [aws_security_group.mlflow_sg.id]
   ecs_service_subnets         = [var.public_subnet_a]
