@@ -20,10 +20,10 @@ variable "password_recovery_window" {
 
 variable "username_secret_name" {
   description = "Name of username storing secret"
-  type        = number
+  type        = string
 }
 
 variable "password_secret_name" {
   description = "Name of password storing secret"
-  type        = number
+  type        = string
 }
