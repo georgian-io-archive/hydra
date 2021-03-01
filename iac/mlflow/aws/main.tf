@@ -10,11 +10,20 @@ module "container_repository" {
   scan_on_push                = true
 }
 
+module "load_balancing" {
+  source              = "./modules/load_balancing"
+  lb_name             = var.alb_name
+  lb_security_groups  = [aws_security_group.mlflow_sg.id]
+  lb_subnets          = [var.public_subnet_a, var.public_subnet_b]
+  lb_target_group     = var.alb_target_group
+  vpc_id              = var.vpc_id
+}
+
 module "task_deployment" {
   source                      = "./modules/task_deployment"
   admin_password_arn          = aws_secretsmanager_secret.admin_password.arn
   admin_username_arn          = aws_secretsmanager_secret.admin_username.arn
-  aws_lb_target_group_arn     = aws_lb_target_group.target_group.arn
+  aws_lb_target_group_arn     = module.load_balancing.lb_target_group_arn
   aws_region                  = var.aws_region
   cloudwatch_log_group        = var.cloudwatch_log_group
   container_name              = var.container_name
