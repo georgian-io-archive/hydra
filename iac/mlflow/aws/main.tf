@@ -4,12 +4,37 @@ provider "aws" {
   region = var.aws_region
 }
 
+module "task_deployment" {
+  source                      = "./modules/task_deployment"
+  admin_password_arn          = aws_secretsmanager_secret.admin_password.arn
+  admin_username_arn          = aws_secretsmanager_secret.admin_username.arn
+  aws_lb_target_group_arn     = aws_lb_target_group.target_group.arn
+  aws_region                  = var.aws_region
+  cloudwatch_log_group        = var.cloudwatch_log_group
+  container_name              = var.container_name
+  db_host                     = aws_db_instance.mlflowdb_tf_test.address
+  db_name                     = aws_db_instance.mlflowdb_tf_test.name
+  db_port                     = "3306"
+  docker_image                = "${aws_ecr_repository.mlflow_container_repository.repository_url}:latest"
+  ecs_service_name            = var.ecs_service_name
+  ecs_service_security_groups = [aws_security_group.mlflow_sg.id]
+  ecs_service_subnets         = [var.public_subnet_a]
+  execution_role_arn          = aws_iam_role.hydra_mlflow_ecs_tasks.arn
+  mlflow_ecs_task_family      = var.mlflow_ecs_task_family
+  mlflow_server_cluster       = var.mlflow_server_cluster
+  s3_bucket_folder            = var.mlflow_artifact_store
+  s3_bucket_name              = "logging"
+  task_cpu                    = 512
+  task_memory                 = 1024
+  task_role_arn               = aws_iam_role.hydra_mlflow_ecs_tasks.arn
+}
+
 module "autoscaling" {
   source                        = "./modules/autoscaling"
-  ecs_service_name              = aws_ecs_service.service.name
+  ecs_service_name              = module.task_deployment.ecs_service_name
   max_tasks                     = 8
   min_tasks                     = 2
-  server_cluster_name           = aws_ecs_cluster.mlflow_server_cluster.name
+  server_cluster_name           = module.task_deployment.ecs_cluster_name
   cpu_autoscale_in_cooldown     = 0
   cpu_autoscale_out_cooldown    = 0
   cpu_autoscale_target          = 80
