@@ -7,7 +7,7 @@ provider "aws" {
 module "container_repository" {
   source                      = "./modules/container_repository"
   mlflow_container_repository = var.mlflow_container_repository
-  scan_on_push                = true
+  scan_on_push                = var.scan_on_push
 }
 
 module "permissions" {
@@ -37,10 +37,10 @@ module "secrets" {
 
 module "load_balancing" {
   source              = "./modules/load_balancing"
-  lb_name             = var.alb_name
+  lb_name             = var.lb_name
   lb_security_groups  = [module.permissions.mlflow_sg_id]
   lb_subnets          = [var.public_subnet_a, var.public_subnet_b]
-  lb_target_group     = var.alb_target_group
+  lb_target_group     = var.lb_target_group
   vpc_id              = var.vpc_id
 }
 module "storage" {
@@ -77,23 +77,25 @@ module "task_deployment" {
   execution_role_arn          = module.permissions.mlflow_ecs_tasks_role_arn
   mlflow_ecs_task_family      = var.mlflow_ecs_task_family
   mlflow_server_cluster       = var.mlflow_server_cluster
-  s3_bucket_folder            = var.mlflow_artifact_store
-  s3_bucket_name              = "logging"
-  task_cpu                    = 512
-  task_memory                 = 1024
+  s3_bucket_folder            = module.storage.s3_bucket
+  s3_bucket_name              = var.artifact_store_folder
+  task_cpu                    = var.task_cpu
+  task_memory                 = var.task_memory
   task_role_arn               = module.permissions.mlflow_ecs_tasks_role_arn
 }
 
 module "autoscaling" {
-  source                        = "./modules/autoscaling"
-  ecs_service_name              = module.task_deployment.ecs_service_name
-  max_tasks                     = 8
-  min_tasks                     = 2
-  server_cluster_name           = module.task_deployment.ecs_cluster_name
-  cpu_autoscale_in_cooldown     = 0
-  cpu_autoscale_out_cooldown    = 0
-  cpu_autoscale_target          = 80
-  memory_autoscale_in_cooldown  = 0
-  memory_autoscale_out_cooldown = 0
-  memory_autoscale_target       = 80
+  source                          = "./modules/autoscaling"
+  ecs_service_name                = module.task_deployment.ecs_service_name
+  max_tasks                       = var.max_tasks
+  min_tasks                       = var.min_tasks
+  server_cluster_name             = module.task_deployment.ecs_cluster_name
+  memory_autoscaling_policy_name  = var.memory_autoscaling_policy_name
+  cpu_autoscaling_policy_name     = var.cpu_autoscaling_policy_name
+  cpu_autoscale_in_cooldown       = var.cpu_autoscale_in_cooldown
+  cpu_autoscale_out_cooldown      = var.cpu_autoscale_out_cooldown
+  cpu_autoscale_target            = var.cpu_autoscale_target
+  memory_autoscale_in_cooldown    = var.memory_autoscale_in_cooldown
+  memory_autoscale_out_cooldown   = var.memory_autoscale_out_cooldown
+  memory_autoscale_target         = var.memory_autoscale_target
 }
