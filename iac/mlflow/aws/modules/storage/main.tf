@@ -3,7 +3,7 @@ resource "aws_s3_bucket" "mlflow_artifact_store" {
   acl     = "private"
 }
 
-resource "aws_db_instance" "mlflowdb" {
+resource "aws_db_instance" "mlflow_database" {
   identifier              = var.mlflow_backend_store_identifier
   allocated_storage       = var.allocated_storage
   storage_type            = var.storage_type
