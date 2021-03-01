@@ -10,38 +10,78 @@ module "container_repository" {
   scan_on_push                = true
 }
 
+module "permissions" {
+  source                  = "./modules/permissions"
+  cidr_blocks             = var.sg_cidr_blocks
+  ecs_task_iam_policy_arn = var.ecs_task_iam_policy_arn
+  mlflow_ecs_tasks_role   = var.mlflow_ecs_tasks_role
+  mlflow_sg               = var.mlflow_sg
+  vpc_id                  = var.vpc_id
+}
+
+module "networking" {
+  source                = "./modules/networking"
+  rds_subnet_group_name = var.rds_subnet_group_name
+  rds_subnets           = [var.public_subnet_a, var.public_subnet_b]
+}
+
+module "secrets" {
+  source                    = "./modules/secrets"
+  password_length           = var.password_length
+  password_recovery_window  = var.password_recovery_window
+  password_secret_name      = var.password_secret_name
+  username_length           = var.username_length
+  username_recovery_window  = var.username_recovery_window
+  username_secret_name      = var.username_secret_name
+}
+
 module "load_balancing" {
   source              = "./modules/load_balancing"
   lb_name             = var.alb_name
-  lb_security_groups  = [aws_security_group.mlflow_sg.id]
+  lb_security_groups  = [module.permissions.mlflow_sg_id]
   lb_subnets          = [var.public_subnet_a, var.public_subnet_b]
   lb_target_group     = var.alb_target_group
   vpc_id              = var.vpc_id
 }
+module "storage" {
+  source                          = "./modules/storage"
+  allocated_storage               = var.allocated_storage
+  db_default_name                 = var.db_default_name
+  db_engine_version               = var.db_engine_version
+  db_instance_class               = var.db_instance_class
+  db_password                     = module.secrets.password
+  db_subnet_group_name            = module.networking.db_subnet_group
+  db_username                     = module.secrets.username
+  mlflow_artifact_store           = var.mlflow_artifact_store
+  mlflow_backend_store_identifier = var.mlflow_backend_store_identifier
+  skip_final_snapshot             = var.skip_final_snapshot
+  storage_type                    = var.storage_type
+  vpc_security_groups             = [module.permissions.mlflow_sg_id]
+}
 
 module "task_deployment" {
   source                      = "./modules/task_deployment"
-  admin_password_arn          = aws_secretsmanager_secret.admin_password.arn
-  admin_username_arn          = aws_secretsmanager_secret.admin_username.arn
+  admin_password_arn          = module.secrets.password_arn
+  admin_username_arn          = module.secrets.username_arn
   aws_lb_target_group_arn     = module.load_balancing.lb_target_group_arn
   aws_region                  = var.aws_region
   cloudwatch_log_group        = var.cloudwatch_log_group
   container_name              = var.container_name
-  db_host                     = aws_db_instance.mlflowdb_tf_test.address
-  db_name                     = aws_db_instance.mlflowdb_tf_test.name
+  db_host                     = module.storage.db_host
+  db_name                     = module.storage.db_name
   db_port                     = "3306"
   docker_image                = "${module.container_repository.container_repository_url}:latest"
   ecs_service_name            = var.ecs_service_name
-  ecs_service_security_groups = [aws_security_group.mlflow_sg.id]
+  ecs_service_security_groups = [module.permissions.mlflow_sg_id]
   ecs_service_subnets         = [var.public_subnet_a]
-  execution_role_arn          = aws_iam_role.hydra_mlflow_ecs_tasks.arn
+  execution_role_arn          = module.permissions.mlflow_ecs_tasks_role_arn
   mlflow_ecs_task_family      = var.mlflow_ecs_task_family
   mlflow_server_cluster       = var.mlflow_server_cluster
   s3_bucket_folder            = var.mlflow_artifact_store
   s3_bucket_name              = "logging"
   task_cpu                    = 512
   task_memory                 = 1024
-  task_role_arn               = aws_iam_role.hydra_mlflow_ecs_tasks.arn
+  task_role_arn               = module.permissions.mlflow_ecs_tasks_role_arn
 }
 
 module "autoscaling" {
