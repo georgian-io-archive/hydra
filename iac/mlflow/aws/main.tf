@@ -1,4 +1,21 @@
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance
+terraform {
+  required_version = ">= 0.14"
+
+  backend "s3" {
+    bucket          = "hydra-mlflow-global-terraform-state"
+    key             = "infrastructure/terraform/main"
+    encrypt         = true
+    region          = "us-east-1"
+    dynamodb_table  = "hydra-mlflow-global-terraform-state-locks"
+  }
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.7"
+    }
+  }
+}
 
 provider "aws" {
   region = var.aws_region
