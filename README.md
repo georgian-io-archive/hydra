@@ -127,4 +127,4 @@ train:
 
 ----------------------
 
-To get an overview of the infrastructure as code, please review the associated [Wiki page](https://github.com/georgian-io/hydra/wiki).
+To get an overview of the infrastructure as code, please review the associated [Wiki page](https://github.com/georgian-io/hydra/wiki/Infrastructure-as-Code-(AWS)).
