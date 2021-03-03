@@ -79,12 +79,12 @@ variable "admin_password_arn" {
 }
 
 variable "task_role_arn" {
-  description = "ARN to RDS Admin Password secret"
+  description = "ARN of task IAM role"
   type        = string
 }
 
 variable "execution_role_arn" {
-  description = "ARN to RDS Admin Password secret"
+  description = "ARN of execution IAM role"
   type        = string
 }
 
