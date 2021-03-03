@@ -155,12 +155,12 @@ variable "skip_final_snapshot" {
   default     = true
 }
 
+# task_deployment
 variable "ecs_service_name" {
   description = "Name of ECS Fargate service name"
   type        = string
 }
 
-# task_deployment
 variable "mlflow_ecs_task_family" {
   description = "ECS task family name"
   type        = string
