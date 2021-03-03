@@ -1,5 +1,5 @@
 variable "rds_subnet_group_name" {
-  description = "RDB subnet group name"
+  description = "RDS subnet group name"
   type        = string
 }
 
