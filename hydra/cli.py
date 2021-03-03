@@ -113,7 +113,11 @@ def train(
         options_list = [options_list]
 
     options_list_inflated = inflate_options(options_list)
-    git_url, commit_sha = check_repo(github_token)
+
+    if cloud == 'aws':
+        git_url, commit_sha = '', ''
+    else:
+        git_url, commit_sha = check_repo(github_token)
 
     hydra_core_configs = {
         'HYDRA_PLATFORM': cloud,
