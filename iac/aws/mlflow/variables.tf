@@ -1,31 +1,21 @@
 variable "aws_region" {
   description = "AWS region"
   type        = string
-  default     = "us-east-1"
 }
 
 variable "vpc_id" {
   description = "VPC id"
   type        = string
-  default     = "vpc-dc395aa7"
 }
 
-variable "public_subnet_a" {
-  description = "ID of public subnet a"
+variable "subnet_a" {
+  description = "ID of subnet a"
   type        = string
-  default     = "subnet-9d2ccbfa"
 }
 
-variable "public_subnet_b" {
-  description = "ID of public subnet b"
+variable "subnet_b" {
+  description = "ID of subnet b"
   type        = string
-  default     = "subnet-6139fa4f"
-}
-
-variable "private_subnet_b" {
-  description = "ID of private subnet b"
-  type        = string
-  default     = "subnet-6510d04b"
 }
 
 # container_repository
@@ -285,19 +275,4 @@ variable "memory_autoscale_target" {
   description = "Target value for memory metric"
   type        = number
   default     = 80
-}
-
-# subnet
-variable "sns_subscription_protocol" {
-  description = "SNS subscription protocol"
-  type        = string
-  default     = "email"
-}
-
-variable "sns_subscription_email_address_list" {
-  description = "SNS subscription protocol"
-  type        = list(string)
-  default     = [
-    "sayon.sivakumaran@georgian.io"
-  ]
 }
