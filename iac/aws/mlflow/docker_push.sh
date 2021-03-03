@@ -4,5 +4,5 @@ repository="mlflow-container-repository"
 
 aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin "${registry_id}.dkr.ecr.${region}.amazonaws.com"
 docker build -t ${repository} .
-docker tag hydra-mlflow-server-aws:latest "${registry_id}.dkr.ecr.${region}.amazonaws.com/${repository}:latest"
+docker tag ${repository}:latest "${registry_id}.dkr.ecr.${region}.amazonaws.com/${repository}:latest"
 docker push "${registry_id}.dkr.ecr.${region}.amazonaws.com/${repository}:latest"

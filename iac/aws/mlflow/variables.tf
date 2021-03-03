@@ -22,7 +22,6 @@ variable "subnet_b" {
 variable "mlflow_container_repository" {
   description = "Container repository name"
   type        = string
-  default     = "mlflow-container-repository"
 }
 
 variable "scan_on_push" {
@@ -35,7 +34,6 @@ variable "scan_on_push" {
 variable "mlflow_ecs_tasks_role" {
   description = "IAM Role name"
   type        = string
-  default     = "mlflow_ecs_tasks_role"
 }
 
 variable "ecs_task_iam_policy_arn" {
@@ -52,7 +50,6 @@ variable "ecs_task_iam_policy_arn" {
 variable "mlflow_sg" {
   description = "Security group name"
   type        = string
-  default     = "mlflow_sg"
 }
 
 variable "sg_cidr_blocks" {
@@ -64,7 +61,6 @@ variable "sg_cidr_blocks" {
 variable "rds_subnet_group_name" {
   description = "RDB subnet group name"
   type        = string
-  default     = "mlflow-db-subnet"
 }
 
 # secrets
@@ -95,39 +91,33 @@ variable "password_recovery_window" {
 variable "username_secret_name" {
   description = "Name of username storing secret"
   type        = string
-  default     = "mlflow/admin_username"
 }
 
 variable "password_secret_name" {
   description = "Name of password storing secret"
   type        = string
-  default     = "mlflow/admin_password"
 }
 
 # load_balancing
 variable "lb_name" {
   description = "Name of LB"
   type        = string
-  default     = "mlflow-lb"
 }
 
 variable "lb_target_group" {
   description = "Name of LB target group"
   type        = string
-  default     = "ecs-mlflow-lb-tg"
 }
 
 # storage
 variable "mlflow_artifact_store" {
   description = "Bucket name"
   type        = string
-  default     = "hydra-mlflow-artifact-store"
 }
 
 variable "mlflow_backend_store_identifier" {
   description = "RDS Database identifier of MLflow backend store"
   type        = string
-  default     = "mlflowdb"
 }
 
 variable "allocated_storage" {
@@ -157,7 +147,6 @@ variable "db_instance_class" {
 variable "db_default_name" {
   description = "Name of default created database in instance"
   type        = string
-  default     = "mlflowdb"
 }
 
 variable "skip_final_snapshot" {
@@ -169,39 +158,33 @@ variable "skip_final_snapshot" {
 variable "ecs_service_name" {
   description = "Name of ECS Fargate service name"
   type        = string
-  default     = "mlflow-deployment-service"
 }
 
 # task_deployment
 variable "mlflow_ecs_task_family" {
   description = "ECS task family name"
   type        = string
-  default     = "mlflow-deployment-task"
 }
 
 
 variable "mlflow_server_cluster" {
   description = "Cluster name"
   type        = string
-  default     = "mlflow-server-cluster"
 }
 
 variable "cloudwatch_log_group" {
   description = "Name of cloudwatch log group"
   type        = string
-  default     = "/ecs/mlflow-deployment-task"
 }
 
 variable "container_name" {
   description = "Name of container"
   type        = string
-  default     = "task"
 }
 
 variable "artifact_store_folder" {
   description = "The folder name of the location artifacts are stored in S3"
   type        = string
-  default     = "logging"
 }
 
 variable "task_memory" {
@@ -226,19 +209,17 @@ variable "min_tasks" {
 variable "max_tasks" {
   description = "Maximum number of running tasks in ECS service"
   type        = number
-  default     = 8
+  default     = 16
 }
 
 variable "memory_autoscaling_policy_name" {
   description = "Name of memory autoscaling policy"
   type        = string
-  default     = "memory-autoscale-mlflow"
 }
 
 variable "cpu_autoscaling_policy_name" {
   description = "Name of CPU autoscaling policy"
   type        = string
-  default     = "cpu-autoscale-mlflow"
 }
 
 variable "cpu_autoscale_in_cooldown" {

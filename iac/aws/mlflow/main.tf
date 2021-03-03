@@ -2,11 +2,11 @@ terraform {
   required_version = ">= 0.14"
 
   backend "s3" {
-    bucket          = "hydra-mlflow-global-terraform-state"
-    key             = "infrastructure/terraform/main"
+    bucket          = ""
+    key             = ""
     encrypt         = true
-    region          = "us-east-1"
-    dynamodb_table  = "hydra-mlflow-global-terraform-state-locks"
+    region          = ""
+    dynamodb_table  = ""
   }
 
   required_providers {
