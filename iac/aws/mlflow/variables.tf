@@ -68,7 +68,6 @@ variable "mlflow_sg" {
 variable "sg_cidr_blocks" {
   description = "CIDR Blocks to allow ingress access to required ports of security group"
   type        = list(string)
-  default     = ["184.146.184.126/32"]
 }
 
 # networking
