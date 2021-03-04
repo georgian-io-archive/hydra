@@ -122,3 +122,9 @@ train:
 ```
   --help   Show usage guide for command
 ```
+
+### Infrastructure as Code
+
+----------------------
+
+To get an overview of the infrastructure as code, please review the associated [Wiki page](https://github.com/georgian-io/hydra/wiki/Infrastructure-as-Code-(AWS)).

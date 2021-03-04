@@ -23,6 +23,8 @@ setuptools.setup(
         [console_scripts]
         hydra=hydra.cli:cli
     ''',
+    scripts=['hydra/docker/local_execution.sh',
+             'hydra/docker/gcp_execution.sh'],
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -6,10 +6,10 @@ class AbstractPlatform():
         self.options = options
 
     def train(self):
-        raise Exception("Not Implemented: Please implement this function in the subclass.")
+        raise NotImplementedError("Not Implemented: Please implement this function in the subclass.")
 
     def serve(self):
-        raise Exception("Not Implemented: Please implement this function in the subclass.")
+        raise NotImplementedError("Not Implemented: Please implement this function in the subclass.")
 
     def run_command(self, command):
         subprocess.run(command)

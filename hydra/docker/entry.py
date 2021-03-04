@@ -13,6 +13,7 @@ args_parser.add_argument('--oauth_token', default=os.environ.get('HYDRA_OAUTH_TO
 args_parser.add_argument('--options')
 args_parser.add_argument('--model_path', default=os.environ.get('HYDRA_MODEL_PATH'))
 args_parser.add_argument('--platform', default=os.environ.get('HYDRA_PLATFORM'))
+args_parser.add_argument('--code_dump_uri', default=os.environ.get('HYDRA_CODE_DUMP_URI'))
 
 args = args_parser.parse_args()
 
@@ -20,8 +21,11 @@ os.mkdir("project")
 os.chdir("project")
 
 # Clone and checkout the specified project repo from github
-subprocess.run(["git", "clone", "https://{}:x-oauth-basic@{}".format(args.oauth_token, args.git_url), "."])
-subprocess.run(["git", "checkout", args.commit_sha])
+if args.code_dump_uri is None:
+    subprocess.run(["git", "clone", "https://{}:x-oauth-basic@{}".format(args.oauth_token, args.git_url), "."])
+    subprocess.run(["git", "checkout", args.commit_sha])
+else:
+    subprocess.run(f'aws s3 cp --recursive {args.code_dump_uri} .')
 
 # Move data from tmp storage to project/data for local execution
 if args.platform == 'local':
@@ -36,5 +40,11 @@ if args.options is not None:
     for arg in args.options.split():
         [key, val] = arg.split('=')
         os.putenv(key, val)
+
+os.putenv('HYDRA_PLATFORM', args.platform)
+os.putenv('HYDRA_GIT_URL', args.git_url)
+os.putenv('HYDRA_COMMIT_SHA', args.commit_sha)
+os.putenv('HYDRA_OAUTH_TOKEN', args.oauth_token)
+os.putenv('HYDRA_MODEL_PATH', args.model_path)
 
 subprocess.run(["conda", "run", "-n", CONDA_ENV_NAME, "python3", args.model_path])

@@ -1,8 +1,10 @@
-makefile
 credential.json
 
 # Local .terraform directories
 **/.terraform/*
+
+# Local terraform lock files
+**/.terraform.lock.hcl
 
 # .tfstate files
 *.tfstate
@@ -165,5 +167,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# .DS_Store
+.DS_Store
 
 .idea

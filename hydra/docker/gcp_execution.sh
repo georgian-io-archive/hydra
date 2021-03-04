@@ -11,7 +11,7 @@ while getopts 'g:c:o:m:r:t:n:p:u:a:y:' flag; do
     m) MODEL_PATH="${OPTARG}" ;;
     r) REGION="${OPTARG}" ;;
     t) IMAGE_TAG="${OPTARG}" ;;
-    u) IMAGE_URL="${OPTARG}" ;;
+    u) IMAGE_URI="${OPTARG}" ;;
     a) GPU_COUNT="${OPTARG}" ;;
     y) GPU_TYPE="${OPTARG}" ;;
     n) MACHINE_NAME="${OPTARG}" ;;
