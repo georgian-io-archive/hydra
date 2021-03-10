@@ -5,8 +5,7 @@ resource "random_string" "rds_username" {
 
 resource "random_password" "rds_password" {
   length  = var.password_length
-  special = true
-  override_special = "!#$&*()-_=+:"
+  special = false
 }
 
 resource "aws_secretsmanager_secret" "admin_username" {
