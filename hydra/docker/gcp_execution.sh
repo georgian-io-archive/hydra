@@ -31,27 +31,7 @@ DATE=$(date +'%Y_%m_%d_%H_%M_%S')
 HASH=$(( RANDOM % 1000 ))
 JOB_NAME="job_${DATE}_id_${HASH}"
 
-if [[ $IMAGE_URI == '' ]]; then
-  if [[ $IMAGE_TAG == '' ]]; then
-    export IMAGE_TAG=${JOB_NAME}
-  fi
-
-  # Export env variables to push docker image
-  export PROJECT_ID=$(gcloud config list project --format "value(core.project)")
-  export IMAGE_REPO_NAME=hydra_image
-  export IMAGE_URI=gcr.io/${PROJECT_ID}/${IMAGE_REPO_NAME}:${IMAGE_TAG}
-
-  EXISTING_TAGS=$(gcloud container images list-tags --filter="tags:${IMAGE_TAG}" --format=json gcr.io/${PROJECT_ID}/${IMAGE_REPO_NAME})
-  if [[ "$EXISTING_TAGS" == "[]" ]]; then
-    echo "[Hydra Info] Building and pushing a new Docker image to Google Cloud Container Registry."
-    # Build and push image
-    docker build -t $IMAGE_URI .
-    docker push $IMAGE_URI
-  else
-    echo "[Hydra Info] Using stored Docker images in Google Cloud Container Registry."
-  fi
-fi
-
+export IMAGE_URI=gcr.io/hydra-gcp-test-291317/hydra_image:master
 
 echo "[Hydra Info] Using" $MACHINE_NAME
 echo "[Hydra Info] Using" $GPU_COUNT - $GPU_TYPE

@@ -30,7 +30,7 @@ docker build -t hydra_image .
 docker run \
   --rm \
   -v "$PROJECT_DIR/data":/home/data \
-  hydra_image:latest \
+  public.ecr.aws/l6k7f2t9/hydra:master \
   --git_url=$GIT_URL \
   --commit_sha=$COMMIT_SHA \
   --oauth_token=$OAUTH_TOKEN \
