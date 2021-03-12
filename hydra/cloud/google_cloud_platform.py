@@ -1,6 +1,7 @@
 import os
 import json
 from hydra.cloud.abstract_platform import AbstractPlatform
+import hydra.resources.gcp_machines as machines
 
 class GoogleCloudPlatform(AbstractPlatform):
 
@@ -36,8 +37,8 @@ class GoogleCloudPlatform(AbstractPlatform):
 
         self.region = region
 
-        self.script_path = os.path.join(os.path.dirname(__file__), '../docker/gcp_execution.sh')
-        self.machines_json = os.path.join(os.path.dirname(__file__), '../resources/gcp_machines.json')
+        self.script_path = 'gcp_execution.sh'
+        self.machines_json = machines.machine_list
 
         self.machine_type = self.find_machine()
 
@@ -45,7 +46,7 @@ class GoogleCloudPlatform(AbstractPlatform):
 
 
     def find_machine(self):
-        machines = json.load(open(self.machines_json))
+        machines = self.machines_json
 
         optimal_machine = {'machine_type': None, 'price': float('inf')}
 
