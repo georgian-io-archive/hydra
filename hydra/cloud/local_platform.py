@@ -18,7 +18,7 @@ class LocalPlatform(AbstractPlatform):
     def train(self):
         command = ['sh', self.script_path, '-g', self.git_url, '-c', self.commit_sha,
             '-o', self.github_token, '-m', self.model_path, '-p', self.options,
-            '-t', self.image_url, '-u', self.image_tag
+            '-t', self.image_tag, '-u', self.image_url
         ]
 
         self.run_command(command)
