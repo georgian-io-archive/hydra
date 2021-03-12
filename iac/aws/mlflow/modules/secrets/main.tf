@@ -5,7 +5,7 @@ resource "random_string" "rds_username" {
 
 resource "random_password" "rds_password" {
   length  = var.password_length
-  special = true
+  special = false
 }
 
 resource "aws_secretsmanager_secret" "admin_username" {
@@ -15,7 +15,7 @@ resource "aws_secretsmanager_secret" "admin_username" {
 
 resource "aws_secretsmanager_secret_version" "secret_username" {
   secret_id     = aws_secretsmanager_secret.admin_username.id
-  secret_string = random_string.rds_username.result
+  secret_string = "mlflow${random_string.rds_username.result}"
 }
 
 resource "aws_secretsmanager_secret" "admin_password" {
