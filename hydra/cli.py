@@ -147,7 +147,9 @@ def train(
                 options=options_str,
                 git_url=git_url,
                 commit_sha=commit_sha,
-                github_token=github_token)
+                github_token=github_token,
+                image_url=image_url,
+                image_tag=image_tag)
 
         elif cloud == 'gcp':
             platform = GoogleCloudPlatform(
