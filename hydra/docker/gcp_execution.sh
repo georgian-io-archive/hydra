@@ -31,7 +31,16 @@ DATE=$(date +'%Y_%m_%d_%H_%M_%S')
 HASH=$(( RANDOM % 1000 ))
 JOB_NAME="job_${DATE}_id_${HASH}"
 
-export IMAGE_URI=gcr.io/hydra-gcp-test-291317/hydra_image:master
+# Build Image URI
+if [[ $IMAGE_URI == '' ]]; then
+  if [[ $IMAGE_TAG == '' ]]; then
+    export IMAGE_URI=gcr.io/hydra-gcp-test-291317/hydra_image:master
+  else
+    export IMAGE_URI=gcr.io/hydra-gcp-test-291317/hydra_image:${IMAGE_TAG}
+  fi
+else
+  export IMAGE_URI=${IMAGE_URI}:${IMAGE_TAG}
+fi
 
 echo "[Hydra Info] Using" $MACHINE_NAME
 echo "[Hydra Info] Using" $GPU_COUNT - $GPU_TYPE
