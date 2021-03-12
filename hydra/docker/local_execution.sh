@@ -39,7 +39,6 @@ else
 fi
 
 # Build and run image
-docker build -t hydra_image .
 docker run \
   --rm \
   -v "$PROJECT_DIR/data":/home/data \
