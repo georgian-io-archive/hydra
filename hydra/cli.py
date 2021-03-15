@@ -71,6 +71,13 @@ def train(
 
             model_path = train_data.get('model_path', const.MODEL_PATH_DEFAULT) if model_path is None else model_path
             cloud = train_data.get('cloud', const.CLOUD_DEFAULT).lower() if cloud is None else cloud
+
+            image_tag = train_data.get('image_tag', const.IMAGE_TAG_DEFAULT) if image_tag is None else image_tag
+            image_url = train_data.get('image_url', const.IMAGE_URL_DEFAULT) if image_url is None else image_url
+
+            if image_tag == '' and image_url != '':
+                raise Exception("image_tag is required when passing a custom image_url")
+
             if cloud == 'gcp' or cloud == 'aws':
                 region = train_data.get('region', const.REGION_DEFAULT) if region is None else region
 
@@ -78,9 +85,6 @@ def train(
                 memory_size = train_data.get('memory_size', const.MEMORY_SIZE_DEFAULT) if memory_size is None else memory_size
                 gpu_count = train_data.get('gpu_count', const.GPU_COUNT_DEFAULT) if gpu_count is None else gpu_count
                 gpu_type = train_data.get('gpu_type', const.GPU_TYPE_DEFAULT) if gpu_type is None else gpu_type
-
-                image_tag = train_data.get('image_tag', const.IMAGE_TAG_DEFAULT) if image_tag is None else image_tag
-                image_url = train_data.get('image_url', const.IMAGE_URL_DEFAULT) if image_url is None else image_url
 
             elif cloud == 'local' or cloud == 'fast_local':
                 pass
@@ -147,7 +151,9 @@ def train(
                 options=options_str,
                 git_url=git_url,
                 commit_sha=commit_sha,
-                github_token=github_token)
+                github_token=github_token,
+                image_url=image_url,
+                image_tag=image_tag)
 
         elif cloud == 'gcp':
             platform = GoogleCloudPlatform(
