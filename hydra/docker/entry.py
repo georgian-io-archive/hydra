@@ -25,7 +25,8 @@ if args.code_dump_uri is None:
     subprocess.run(["git", "clone", "https://{}:x-oauth-basic@{}".format(args.oauth_token, args.git_url), "."])
     subprocess.run(["git", "checkout", args.commit_sha])
 else:
-    subprocess.run(f'aws s3 cp --recursive {args.code_dump_uri} .')
+    if args.platform == 'aws':
+        subprocess.run(f'aws s3 cp --recursive {args.code_dump_uri} .', shell=True)
 
 # Move data from tmp storage to project/data for local execution
 if args.platform == 'local':
@@ -34,7 +35,7 @@ if args.platform == 'local':
     shutil.copytree("/home/data", "/home/project/data")
 
 subprocess.run(["conda", "env", "create", "-n", CONDA_ENV_NAME, "-f", "environment.yml"])
-subprocess.run(["conda", "run", "-n", "hydra", "pip", "install", "hydra-ml"])
+subprocess.run(["conda", "run", "-n", CONDA_ENV_NAME, "pip", "install", "hydra-ml"])
 
 if args.options is not None:
     for arg in args.options.split():
@@ -42,8 +43,8 @@ if args.options is not None:
         os.putenv(key, val)
 
 os.putenv('HYDRA_PLATFORM', args.platform)
-os.putenv('HYDRA_GIT_URL', args.git_url)
-os.putenv('HYDRA_COMMIT_SHA', args.commit_sha)
+os.putenv('HYDRA_GIT_URL', args.git_url or '')
+os.putenv('HYDRA_COMMIT_SHA', args.commit_sha or '')
 os.putenv('HYDRA_OAUTH_TOKEN', args.oauth_token)
 os.putenv('HYDRA_MODEL_PATH', args.model_path)
 
