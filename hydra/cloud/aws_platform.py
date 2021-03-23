@@ -91,7 +91,7 @@ class AWSPlatform(AbstractPlatform):
         })
 
         container_properties_dict = {
-                'image': '823217009914.dkr.ecr.us-east-1.amazonaws.com/hydra:master',
+                'image': 'public.ecr.aws/l6k7f2t9/hydra:master',
                 'vcpus': self.cpu,
                 'memory': self.memory*1000,
                 'privileged': True,
