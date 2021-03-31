@@ -4,6 +4,8 @@ import uuid
 import subprocess
 import boto3
 from hydra.cloud.abstract_platform import AbstractPlatform
+import sqlalchemy
+import pymysql
 
 class AWSPlatform(AbstractPlatform):
 
@@ -17,6 +19,10 @@ class AWSPlatform(AbstractPlatform):
             cpu,
             memory,
             gpu_count,
+            metadata_db_hostname,
+            metadata_db_username_secret,
+            metadata_db_password_secret,
+            metadata_db_name,
             image_tag,
             image_url,
             options,
@@ -27,6 +33,11 @@ class AWSPlatform(AbstractPlatform):
         self.commit_sha = commit_sha
         self.github_token = github_token
 
+        self.metadata_db_hostname = metadata_db_hostname
+        self.metadata_db_username_secret = metadata_db_username_secret
+        self.metadata_db_password_secret = metadata_db_password_secret
+        self.metadata_db_name = metadata_db_name
+
         self.image_tag = image_tag
         self.image_url = image_url
 
@@ -36,7 +47,8 @@ class AWSPlatform(AbstractPlatform):
 
         self.region = region
 
-        self.job_name = f"{self.project_name}_{uuid.uuid1()}"
+        self.uuid = uuid.uuid1()
+        self.job_name = f"{self.project_name}_{self.uuid}"
         self.hydra_code_dump_uri = f's3://hydra-code-dumps/{self.job_name}'
 
         self.batch = boto3.client(
@@ -44,6 +56,7 @@ class AWSPlatform(AbstractPlatform):
             region_name='us-east-1',
             endpoint_url='https://batch.us-east-1.amazonaws.com'
         )
+        self.secret = boto3.client('secretsmanager')
 
         super().__init__(model_path, options)
         self.options['HYDRA_GIT_URL'] = self.git_url
@@ -51,6 +64,17 @@ class AWSPlatform(AbstractPlatform):
         self.options['HYDRA_OAUTH_TOKEN'] = self.github_token
         self.options['HYDRA_MODEL_PATH'] = self.model_path
         self.options['HYDRA_PLATFORM'] = 'aws'
+
+        self.init_metadata_db_connection()
+
+    def init_metadata_db_connection(self):
+        username_secret = self.secret.get_secret_value(SecretId=self.metadata_db_username_secret)['SecretString']
+        password_secret = self.secret.get_secret_value(SecretId=self.metadata_db_password_secret)['SecretString']
+
+        self.db_connection = sqlalchemy.create_engine(f'mysql+pymysql://{username_secret}:'
+                                                      f'{password_secret}@'
+                                                      f'{self.metadata_db_hostname}:'
+                                                      f'3306/{self.metadata_db_name}').connect()
 
     def upload_code_to_s3(self):
         command = ['aws s3 cp --quiet --recursive',
@@ -66,11 +90,17 @@ class AWSPlatform(AbstractPlatform):
 
     def train(self):
         # create job definition
-
-        self.upload_code_to_s3()
-
         job_def_name = f"job-def-{self.job_name}"
         environment_list = []
+
+        self.upload_code_to_s3()
+        self.db_connection.execute(f'''
+            INSERT INTO job SET
+            type_id=3,
+            name='{self.job_name}',
+            job_uuid='{self.uuid}',
+            args='{json.dumps(self.options)}';
+        ''')
 
         if int(self.gpu_count) > 0 :
             job_queue = 'hydra-gpu-queue'
