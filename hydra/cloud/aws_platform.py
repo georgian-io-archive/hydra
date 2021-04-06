@@ -6,6 +6,8 @@ import boto3
 from hydra.cloud.abstract_platform import AbstractPlatform
 import sqlalchemy
 import pymysql
+import getpass
+from requests import get
 
 class AWSPlatform(AbstractPlatform):
 
@@ -16,6 +18,7 @@ class AWSPlatform(AbstractPlatform):
             git_url,
             commit_sha,
             github_token,
+            hydra_version,
             cpu,
             memory,
             gpu_count,
@@ -32,14 +35,15 @@ class AWSPlatform(AbstractPlatform):
         self.git_url = git_url
         self.commit_sha = commit_sha
         self.github_token = github_token
+        self.hydra_version = hydra_version
 
         self.metadata_db_hostname = metadata_db_hostname
         self.metadata_db_username_secret = metadata_db_username_secret
         self.metadata_db_password_secret = metadata_db_password_secret
         self.metadata_db_name = metadata_db_name
 
-        self.image_tag = image_tag
-        self.image_url = image_url
+        self.image_tag = image_tag or 'master'
+        self.image_url = image_url or 'public.ecr.aws/l6k7f2t9/hydra'
 
         self.cpu = cpu
         self.memory = memory
@@ -88,12 +92,30 @@ class AWSPlatform(AbstractPlatform):
         print(f"Pushed code to {self.hydra_code_dump_uri} \n")
         return 0
 
+    def insert_job_attributes(self, job_id):
+        ip = get('https://checkip.amazonaws.com').text.strip()
+
+        self.db_connection.execute(f'''
+            INSERT INTO job_attribute SET k='Location', v='Batch', job_id={job_id};
+        ''')
+        self.db_connection.execute(f'''
+            INSERT INTO job_attribute SET k='Username', v='{getpass.getuser()}', job_id={job_id};
+        ''')
+        self.db_connection.execute(f'''
+            INSERT INTO job_attribute SET k='IP Address', v='{ip}', job_id={job_id};
+        ''')
+        self.db_connection.execute(f'''
+            INSERT INTO job_attribute SET k='Image URI', v='{self.image_url}:{self.image_tag}', job_id={job_id};
+        ''')
+        self.db_connection.execute(f'''
+            INSERT INTO job_attribute SET k='Hydra Version', v='{self.hydra_version}', job_id={job_id};
+        ''')
+
     def train(self):
         # create job definition
         job_def_name = f"job-def-{self.job_name}"
         environment_list = []
 
-        self.upload_code_to_s3()
         self.db_connection.execute(f'''
             INSERT INTO job SET
             type_id=3,
@@ -101,6 +123,11 @@ class AWSPlatform(AbstractPlatform):
             job_uuid='{self.uuid}',
             args='{json.dumps(self.options)}';
         ''')
+        current_job_proxy = self.db_connection.execute('SELECT MAX(id) FROM job;')
+        current_job_id = current_job_proxy.fetchall()[0][0]
+
+        self.upload_code_to_s3()
+        self.insert_job_attributes(current_job_id)
 
         if int(self.gpu_count) > 0 :
             job_queue = 'hydra-gpu-queue'
@@ -121,7 +148,7 @@ class AWSPlatform(AbstractPlatform):
         })
 
         container_properties_dict = {
-                'image': 'public.ecr.aws/l6k7f2t9/hydra:master',
+                'image': f'{self.image_url}:{self.image_tag}',
                 'vcpus': self.cpu,
                 'memory': self.memory*1000,
                 'privileged': True,
