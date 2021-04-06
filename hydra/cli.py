@@ -147,8 +147,8 @@ def train(
 
     hydra_core_configs = {
         'HYDRA_PLATFORM': cloud,
-        'HYDRA_GIT_URL': git_url,
-        'HYDRA_COMMIT_SHA': commit_sha,
+        'HYDRA_GIT_URL': git_url or '',
+        'HYDRA_COMMIT_SHA': commit_sha or '',
         'HYDRA_OAUTH_TOKEN': github_token,
         'HYDRA_MODEL_PATH': model_path
     }
@@ -203,6 +203,7 @@ def train(
                 region=region,
                 git_url=git_url,
                 commit_sha=commit_sha,
+                hydra_version=__version__,
                 metadata_db_hostname=metadata_db_hostname,
                 metadata_db_username_secret=metadata_db_username_secret,
                 metadata_db_password_secret=metadata_db_password_secret,

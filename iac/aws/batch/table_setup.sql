@@ -1,6 +1,6 @@
 -- DROP DATABASE ailab_tracker;
-CREATE DATABASE IF NOT EXISTS batchdbtesttf;
-USE batchdbtesttf;
+CREATE DATABASE IF NOT EXISTS <ENTER DATABASE HERE>;
+USE <ENTER DATABASE HERE>;
 
 DROP TABLE IF EXISTS schema_info;
 CREATE TABLE schema_info (
@@ -55,8 +55,9 @@ CREATE TABLE job_attribute (
    job_id BIGINT NOT NULL,
    k VARCHAR(100) NOT NULL,
    v VARCHAR(200),
-   -- index for k and v
    longval TEXT,
+   INDEX k_index (k),
+   INDEX v_index (v),
    FOREIGN KEY ( job_id )
    	   REFERENCES job(id)
 	   ON DELETE CASCADE
