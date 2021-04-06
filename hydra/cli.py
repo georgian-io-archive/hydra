@@ -35,6 +35,12 @@ def cli():
 
 @click.option('--region', default=None, type=str, help="Region of cloud server location")
 
+# AWS specific options
+@click.option('--metadata_db_hostname', default=None, type=str, help="Hostname of the RDS instance storing job metadata")
+@click.option('--metadata_db_username_secret', default=None, type=str, help="Secret name in AWS of the username of the RDS instance storing job metadata")
+@click.option('--metadata_db_password_secret', default=None, type=str, help="Secret name in AWS of the password of the RDS instance storing job metadata")
+@click.option('--metadata_db_name', default=None, type=str, help="Database name of the RDS instance storing job metadata")
+
 # Docker Options
 @click.option('-t', '--image_tag', default=None, type=str, help="Docker image tag name")
 @click.option('-u', '--image_url', default=None, type=str, help="Url to the docker image on cloud")
@@ -53,6 +59,10 @@ def train(
     gpu_count,
     gpu_type,
     region,
+    metadata_db_hostname,
+    metadata_db_username_secret,
+    metadata_db_password_secret,
+    metadata_db_name,
     image_tag,
     image_url,
     options):
@@ -86,6 +96,12 @@ def train(
                 gpu_count = train_data.get('gpu_count', const.GPU_COUNT_DEFAULT) if gpu_count is None else gpu_count
                 gpu_type = train_data.get('gpu_type', const.GPU_TYPE_DEFAULT) if gpu_type is None else gpu_type
 
+                if cloud == 'aws':
+                    metadata_db_hostname = train_data.get('metadata_db_hostname', const.METADATA_DB_HOSTNAME) if metadata_db_hostname is None else metadata_db_hostname
+                    metadata_db_username_secret = train_data.get('metadata_db_username_secret', const.METADATA_DB_USERNAME_SECRET) if metadata_db_username_secret is None else metadata_db_username_secret
+                    metadata_db_password_secret = train_data.get('metadata_db_password_secret', const.METADATA_DB_PASSWORD_SECRET) if metadata_db_password_secret is None else metadata_db_password_secret
+                    metadata_db_name = train_data.get('metadata_db_name', const.METADATA_DB_NAME) if metadata_db_name is None else metadata_db_name
+
             elif cloud == 'local' or cloud == 'fast_local':
                 pass
 
@@ -113,6 +129,12 @@ def train(
         options = str(const.OPTIONS_DEFAULT) if options is None else options
         options_list = json.loads(options)
 
+        if cloud == 'aws':
+            metadata_db_hostname = const.METADATA_DB_HOSTNAME if metadata_db_hostname is None else metadata_db_hostname
+            metadata_db_username_secret = const.METADATA_DB_USERNAME_SECRET if metadata_db_username_secret is None else metadata_db_username_secret
+            metadata_db_password_secret = const.METADATA_DB_PASSWORD_SECRET if metadata_db_password_secret is None else metadata_db_password_secret
+            metadata_db_name = const.METADATA_DB_NAME if metadata_db_name is None else metadata_db_name
+
     if isinstance(options_list, dict):
         options_list = [options_list]
 
@@ -125,8 +147,8 @@ def train(
 
     hydra_core_configs = {
         'HYDRA_PLATFORM': cloud,
-        'HYDRA_GIT_URL': git_url,
-        'HYDRA_COMMIT_SHA': commit_sha,
+        'HYDRA_GIT_URL': git_url or '',
+        'HYDRA_COMMIT_SHA': commit_sha or '',
         'HYDRA_OAUTH_TOKEN': github_token,
         'HYDRA_MODEL_PATH': model_path
     }
@@ -181,6 +203,11 @@ def train(
                 region=region,
                 git_url=git_url,
                 commit_sha=commit_sha,
+                hydra_version=__version__,
+                metadata_db_hostname=metadata_db_hostname,
+                metadata_db_username_secret=metadata_db_username_secret,
+                metadata_db_password_secret=metadata_db_password_secret,
+                metadata_db_name=metadata_db_name,
                 image_url=image_url,
                 image_tag=image_tag,
                 options=options
