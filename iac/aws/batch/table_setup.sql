@@ -63,9 +63,6 @@ CREATE TABLE job_attribute (
 	   ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- where it is being run, uuid being used to reference the job, laptop username, ip address, container id [todo: git url, git commit]
-
-
 DROP TABLE IF EXISTS job_event_type;
 CREATE TABLE job_event_type (
    id BIGINT NOT NULL AUTO_INCREMENT,
@@ -82,23 +79,6 @@ insert into job_event_type set id=4, name='log';
 insert into job_event_type set id=5, name='callback';
 insert into job_event_type set id=6, name='execution';
 insert into job_event_type set id=7, name='uuidchange';
-
--- insert into job_event_type set id=2, name='';
--- insert into job_event_type set id=, name='';
-
--- insert into job_event_type set id=1, name='cli';
--- insert into job_event_type set id=2, name='aws-batch';
--- insert into job_event_type set id=3, name='lambda';
--- insert into job_event_type set id=4, name='runner';
-
--- insert into job_event_type set id=4, name='';
--- insert into job_event_type set id=5, name='';
--- insert into job_event_type set id=6, name='';
--- insert into job_event_type set id=7, name='';
--- insert into job_event_type set id=8, name='';
--- insert into job_event_type set id=9, name='';
--- insert into job_event_type set id=, name='';
--- insert into job_event_type set id=, name='';
 
 DROP TABLE IF EXISTS job_event;
 CREATE TABLE job_event (
@@ -117,5 +97,3 @@ CREATE TABLE job_event (
    FOREIGN KEY (type_id)
         REFERENCES job_event_type(id)
 ) ENGINE=InnoDB;
-
--- state transitions; start in, run in, job dies, cascade on delete
