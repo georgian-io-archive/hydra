@@ -1,3 +1,18 @@
+variable "table_setup_script_bucket_name" {
+  description = "The name of the S3 bucket that will store the table setup script"
+  type        = string
+}
+
+variable "table_setup_script_bucket_key" {
+  description = "The key of the S3 bucket that will store the table setup script"
+  type        = string
+}
+
+variable "table_setup_script_local_path" {
+  description = "The local path of the SQL script to be executed in RDS"
+  type        = string
+}
+
 variable "batch_backend_store_identifier" {
   description = "RDS Database identifier of Batch backend store"
   type        = string
