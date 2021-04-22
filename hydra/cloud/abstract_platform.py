@@ -5,7 +5,7 @@ class AbstractPlatform():
         self.model_path = model_path
         self.options = options
 
-    def train(self):
+    def run(self):
         raise NotImplementedError("Not Implemented: Please implement this function in the subclass.")
 
     def serve(self):

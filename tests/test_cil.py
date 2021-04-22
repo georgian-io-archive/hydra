@@ -21,7 +21,7 @@ OPTIONS = "epoch=88 lr=0.01"
 SCRIPT_PATH = "camp/flog/gnaw"
 MACHINE_NAME = "macbook-pro"
 
-def test_train_local_cil(mocker):
+def test_run_local_cil(mocker):
     mocker.patch(
         "hydra.cli.os.path.isfile",
         return_value=False
@@ -46,11 +46,11 @@ def test_train_local_cil(mocker):
         return_value=None
     )
     mocker.patch(
-        'hydra.cli.LocalPlatform.train',
+        'hydra.cli.LocalPlatform.run',
     )
 
     runner = CliRunner()
-    result = runner.invoke(train,
+    result = runner.invoke(run,
         ['--model_path', MODEL_PATH,
          '--cloud', 'local',
          '--github_token', GITHUB_TOKEN,
@@ -64,13 +64,13 @@ def test_train_local_cil(mocker):
         github_token=GITHUB_TOKEN,
     )
 
-    LocalPlatform.train.assert_called_once_with()
+    LocalPlatform.run.assert_called_once_with()
 
     assert result.exit_code == 0
 
 
 
-def test_train_google_cloud_cli(mocker):
+def test_run_google_cloud_cli(mocker):
     mocker.patch(
         "hydra.cli.os.path.isfile",
         return_value=False
@@ -95,11 +95,11 @@ def test_train_google_cloud_cli(mocker):
         return_value=None
     )
     mocker.patch(
-        'hydra.cli.GoogleCloudPlatform.train'
+        'hydra.cli.GoogleCloudPlatform.run'
     )
 
     runner = CliRunner()
-    result = runner.invoke(train,
+    result = runner.invoke(run,
         ['--model_path', MODEL_PATH,
          '--cloud', 'gcp',
          '--github_token', GITHUB_TOKEN,
@@ -126,12 +126,12 @@ def test_train_google_cloud_cli(mocker):
         options=OPTIONS,
     )
 
-    GoogleCloudPlatform.train.assert_called_once_with()
+    GoogleCloudPlatform.run.assert_called_once_with()
 
     assert result.exit_code == 0
 
 
-def test_train_yaml(mocker):
+def test_run_yaml(mocker):
     mocker.patch(
         "hydra.cli.os.path.isfile",
         return_value=True
@@ -145,11 +145,11 @@ def test_train_yaml(mocker):
         return_value=None
     )
     mocker.patch(
-        'hydra.cli.LocalPlatform.train',
+        'hydra.cli.LocalPlatform.run',
     )
 
     runner = CliRunner()
-    result = runner.invoke(train,
+    result = runner.invoke(run,
         ['-y', TEST_YAML_PATH,
         '--github_token', GITHUB_TOKEN])
 
@@ -196,6 +196,6 @@ def test_train_yaml(mocker):
 
 
 
-    LocalPlatform.train.assert_called_with()
+    LocalPlatform.run.assert_called_with()
 
     assert result.exit_code == 0

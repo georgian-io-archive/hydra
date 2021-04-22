@@ -59,25 +59,25 @@ $ hydra --help
 ```
 ----------------------
 
-#### `hydra train`
+#### `hydra run`
 
-Submit a training job to the selected cloud platform. You need to run this from inside a git hosted repository that
+Submit a job to the selected cloud platform. You need to run this from inside a git hosted repository that
 contains your model code and a conda yaml file `environment.yml` . The command takes a number of options to tailor your
-training job. These options can also be provided via a `yaml` file 
+job. These options can also be provided via a `yaml` file 
 
-`hydra train [flags]`
+`hydra run [flags]`
 
 ##### Examples
 
 ```
-$ hydra train -m catboost_model.py --cloud gcp --cpu_count 8 --memory_size 20
-$ hydra train -m catboost_model.py --cloud gcp --cpu_count 8 --memory_size 20 --options '{"iterations": 100, "depth": 20}'
-$ hydra train -y catboost_model_configs.yaml
+$ hydra run -m catboost_model.py --cloud gcp --cpu_count 8 --memory_size 20
+$ hydra run -m catboost_model.py --cloud gcp --cpu_count 8 --memory_size 20 --options '{"iterations": 100, "depth": 20}'
+$ hydra run -y catboost_model_configs.yaml
 ```
 
 `catboost_model_configs.yaml` looks like this :
 ```
-train:
+run:
   model_path: 'catboost_model.py'
   cloud: "gcp"
   cpu_count: 8

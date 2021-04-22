@@ -68,7 +68,7 @@ class GoogleCloudPlatform(AbstractPlatform):
             return optimal_machine['machine_type']
 
 
-    def train(self):
+    def run(self):
         command = ['sh', self.script_path, '-g', self.git_url, '-c', self.commit_sha,
             '-o', self.github_token, '-m', self.model_path, '-r', self.region,
             '-t', self.image_tag, '-u', self.image_url, '-a', self.gpu_count, '-y', self.gpu_type,

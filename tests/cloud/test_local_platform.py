@@ -26,12 +26,12 @@ def local_platform():
     yield lp
 
 
-def test_train_local(mocker, local_platform):
+def test_run_local(mocker, local_platform):
     mocker.patch(
         'hydra.cloud.local_platform.LocalPlatform.run_command',
     )
 
-    result = local_platform.train()
+    result = local_platform.run()
 
     local_platform.run_command.assert_called_once_with(['sh', SCRIPT_PATH, '-g', GIT_URL,
         '-c', COMMIT_SHA, '-o', GITHUB_TOKEN, '-m', MODEL_PATH, '-p', OPTIONS])
