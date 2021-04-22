@@ -3,6 +3,26 @@ variable "aws_region" {
   type        = string
 }
 
+variable "compute_environment_service_role_name" {
+  description = "IAM name of the compute environment service role"
+  type        = string
+}
+
+variable "compute_environment_service_iam_policy_arn" {
+  description = "IAM policies attached to compute environment service role"
+  type        = list(string)
+}
+
+variable "compute_environment_instance_role_name" {
+  description = "IAM name of the compute environment instance role"
+  type        = string
+}
+
+variable "compute_environment_instance_iam_policy_arn" {
+  description = "IAM policies attached to compute environment instance role"
+  type        = list(string)
+}
+
 variable "password_random_length" {
   description = "Number of randomly generated characters in password"
   type = number
@@ -31,6 +51,26 @@ variable "username_recovery_window" {
 variable "username_secret_name" {
   description = "Secret name containining Batch database username"
   type = string
+}
+
+variable "table_setup_script_bucket_name" {
+  description = "The name of the S3 bucket that will store the table setup script"
+  type        = string
+}
+
+variable "table_setup_script_bucket_key" {
+  description = "The key of the S3 bucket that will store the table setup script"
+  type        = string
+}
+
+variable "rds_subnet_group_name" {
+  description = "RDS subnet group name"
+  type        = string
+}
+
+variable "subnets" {
+  description = "Subnets attached to RDS, Compute Environment, and Lambda"
+  type        = list(string)
 }
 
 variable "batch_backend_store_identifier" {
@@ -77,19 +117,14 @@ variable "db_subnet_group_name" {
   type        = string
 }
 
-variable "vpc_security_groups" {
-  description = "VPC security groups associated with database"
+variable "security_groups" {
+  description = "Security groups associated with database, compute environments, and lambda function"
   type        = list(string)
 }
 
 variable "compute_environments" {
   description = "List of maps of compute environments to be created; map key name is 'name', map value name is 'instance_type'"
   type        = list
-}
-
-variable "compute_environment_instance_role" {
-  description = "Instance role to be used in compute environment"
-  type        = string
 }
 
 variable "compute_environment_resource_type" {
@@ -105,21 +140,6 @@ variable "compute_environment_max_vcpus" {
 variable "compute_environment_min_vcpus" {
   description = "Minumum vCPUs that the compute environment should maintain"
   type        = number
-}
-
-variable "compute_environment_security_group_ids" {
-  description = "EC2 security groups associated with instances within compute envrionment"
-  type        = list(string)
-}
-
-variable "compute_environment_service_role" {
-  description = "ARN of the IAM role allowing Batch to call other services"
-  type        = string
-}
-
-variable "compute_environment_subnets" {
-  description = "Subnets that compute resources are launched in"
-  type        = list(string)
 }
 
 variable "compute_environment_type" {
@@ -140,4 +160,24 @@ variable "job_queue_priority" {
 variable "job_queue_state" {
   description = "The state of the job queue: Valid options are 'ENABLED' or 'DISABLED'"
   type        = string
+}
+
+variable "lambda_service_role_name" {
+  description = "IAM name of the lambda function service role"
+  type        = string
+}
+
+variable "lambda_service_iam_policy_arn" {
+  description = "IAM policies attached to the lambda function service role"
+  type        = list(string)
+}
+
+variable "lambda_function_name" {
+  description = "Name of the lambda function that will be created"
+  type        = string
+}
+
+variable "lambda_function_timeout" {
+  description = "Timeout of the executed lambda function"
+  type        = number
 }
