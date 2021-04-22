@@ -9,7 +9,7 @@ ENV BUCKET $BUCKET
 ENV FOLDER $FOLDER
 
 RUN pip install \
-    mlflow \
+    mlflow==1.15.0 \
     boto3  \
     pymysql
 
