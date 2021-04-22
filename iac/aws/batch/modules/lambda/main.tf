@@ -27,7 +27,7 @@ resource "aws_lambda_function" "initialize_db" {
   function_name = var.lambda_function_name
   role          = aws_iam_role.lambda_service_role.arn
   timeout       = var.lambda_function_timeout
-  handler       = "test.initialize_db"
+  handler       = "batch_lambda.initialize_db"
   runtime       = "python3.8"
 
   vpc_config {
