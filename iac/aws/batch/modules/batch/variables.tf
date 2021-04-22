@@ -8,8 +8,8 @@ variable "compute_environments" {
   type        = list
 }
 
-variable "compute_environment_instance_role" {
-  description = "Instance role to be used in compute environment"
+variable "compute_environment_instance_profile_arn" {
+  description = "ARN of the instance profile to be used in compute environment"
   type        = string
 }
 
@@ -33,7 +33,7 @@ variable "compute_environment_security_group_ids" {
   type        = list(string)
 }
 
-variable "compute_environment_service_role" {
+variable "compute_environment_service_role_arn" {
   description = "ARN of the IAM role allowing Batch to call other services"
   type        = string
 }
