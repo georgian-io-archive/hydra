@@ -1,11 +1,8 @@
 import os
-import json
 import uuid
 import subprocess
 import boto3
 from hydra.cloud.abstract_platform import AbstractPlatform
-import sqlalchemy
-import pymysql
 import getpass
 from requests import get
 
@@ -57,8 +54,8 @@ class AWSPlatform(AbstractPlatform):
 
         self.batch = boto3.client(
             service_name='batch',
-            region_name='us-east-1',
-            endpoint_url='https://batch.us-east-1.amazonaws.com'
+            region_name=region,
+            endpoint_url=f'https://batch.{region}.amazonaws.com'
         )
         self.secret = boto3.client('secretsmanager')
 
@@ -69,16 +66,10 @@ class AWSPlatform(AbstractPlatform):
         self.options['HYDRA_MODEL_PATH'] = self.model_path
         self.options['HYDRA_PLATFORM'] = 'aws'
 
-        self.init_metadata_db_connection()
-
-    def init_metadata_db_connection(self):
-        username_secret = self.secret.get_secret_value(SecretId=self.metadata_db_username_secret)['SecretString']
-        password_secret = self.secret.get_secret_value(SecretId=self.metadata_db_password_secret)['SecretString']
-
-        self.db_connection = sqlalchemy.create_engine(f'mysql+pymysql://{username_secret}:'
-                                                      f'{password_secret}@'
-                                                      f'{self.metadata_db_hostname}:'
-                                                      f'3306/{self.metadata_db_name}').connect()
+        self.options['HYDRA_METADATA_DB_HOSTNAME'] = self.metadata_db_hostname
+        self.options['HYDRA_METADATA_DB_USERNAME_SECRET'] = self.metadata_db_username_secret
+        self.options['HYDRA_METADATA_DB_PASSWORD_SECRET'] = self.metadata_db_password_secret
+        self.options['HYDRA_METADATA_DB_NAME'] = self.metadata_db_name
 
     def upload_code_to_s3(self):
         command = ['aws s3 cp --quiet --recursive',
@@ -92,42 +83,22 @@ class AWSPlatform(AbstractPlatform):
         print(f"Pushed code to {self.hydra_code_dump_uri} \n")
         return 0
 
-    def insert_job_attributes(self, job_id):
-        ip = get('https://checkip.amazonaws.com').text.strip()
+    def insert_job_attributes(self):
+        self.options['ATTRIBUTE_JOB_UUID'] = self.uuid
+        self.options['ATTRIBUTE_JOB_NAME'] = self.job_name
+        self.options['ATTRIBUTE_JOB_LOCATION'] = 'Batch'
+        self.options['ATTRIBUTE_USERNAME'] = getpass.getuser()
+        self.options['ATTRIBUTE_IP_ADDRESS'] = get('https://checkip.amazonaws.com').text.strip()
+        self.options['ATTRIBUTE_IMAGE_URI'] = f'{self.image_url}:{self.image_tag}'
+        self.options['ATTRIBUTE_HYDRA_VERSION'] = self.hydra_version
 
-        self.db_connection.execute(f'''
-            INSERT INTO job_attribute SET k='Location', v='Batch', job_id={job_id};
-        ''')
-        self.db_connection.execute(f'''
-            INSERT INTO job_attribute SET k='Username', v='{getpass.getuser()}', job_id={job_id};
-        ''')
-        self.db_connection.execute(f'''
-            INSERT INTO job_attribute SET k='IP Address', v='{ip}', job_id={job_id};
-        ''')
-        self.db_connection.execute(f'''
-            INSERT INTO job_attribute SET k='Image URI', v='{self.image_url}:{self.image_tag}', job_id={job_id};
-        ''')
-        self.db_connection.execute(f'''
-            INSERT INTO job_attribute SET k='Hydra Version', v='{self.hydra_version}', job_id={job_id};
-        ''')
-
-    def train(self):
+    def run(self):
         # create job definition
         job_def_name = f"job-def-{self.job_name}"
         environment_list = []
 
-        self.db_connection.execute(f'''
-            INSERT INTO job SET
-            type_id=3,
-            name='{self.job_name}',
-            job_uuid='{self.uuid}',
-            args='{json.dumps(self.options)}';
-        ''')
-        current_job_proxy = self.db_connection.execute('SELECT MAX(id) FROM job;')
-        current_job_id = current_job_proxy.fetchall()[0][0]
-
         self.upload_code_to_s3()
-        self.insert_job_attributes(current_job_id)
+        self.insert_job_attributes()
 
         if int(self.gpu_count) > 0 :
             job_queue = 'hydra-gpu-queue'
