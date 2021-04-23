@@ -48,7 +48,7 @@ def cli():
 # Env variable of model file
 @click.option('-o', '--options', default=None, type=str, help='Environmental variables for the script')
 
-def train(
+def run(
     yaml_path,
     project_name,
     model_path,
@@ -73,34 +73,34 @@ def train(
             print("[Hydra Info]: Loading run info from {}...".format(yaml_path))
 
             data = yaml.load(f, Loader=yaml.FullLoader)
-            train_data = data.get('train', '')
-            project_name = train_data.get('project_name')
+            run_data = data.get('run', '')
+            project_name = run_data.get('project_name')
 
             if project_name is None:
                 raise ValueError("project_name option is required")
 
-            model_path = train_data.get('model_path', const.MODEL_PATH_DEFAULT) if model_path is None else model_path
-            cloud = train_data.get('cloud', const.CLOUD_DEFAULT).lower() if cloud is None else cloud
+            model_path = run_data.get('model_path', const.MODEL_PATH_DEFAULT) if model_path is None else model_path
+            cloud = run_data.get('cloud', const.CLOUD_DEFAULT).lower() if cloud is None else cloud
 
-            image_tag = train_data.get('image_tag', const.IMAGE_TAG_DEFAULT) if image_tag is None else image_tag
-            image_url = train_data.get('image_url', const.IMAGE_URL_DEFAULT) if image_url is None else image_url
+            image_tag = run_data.get('image_tag', const.IMAGE_TAG_DEFAULT) if image_tag is None else image_tag
+            image_url = run_data.get('image_url', const.IMAGE_URL_DEFAULT) if image_url is None else image_url
 
             if image_tag == '' and image_url != '':
                 raise Exception("image_tag is required when passing a custom image_url")
 
             if cloud == 'gcp' or cloud == 'aws':
-                region = train_data.get('region', const.REGION_DEFAULT) if region is None else region
+                region = run_data.get('region', const.REGION_DEFAULT) if region is None else region
 
-                cpu_count = train_data.get('cpu_count', const.CPU_COUNT_DEFAULT) if cpu_count is None else cpu_count
-                memory_size = train_data.get('memory_size', const.MEMORY_SIZE_DEFAULT) if memory_size is None else memory_size
-                gpu_count = train_data.get('gpu_count', const.GPU_COUNT_DEFAULT) if gpu_count is None else gpu_count
-                gpu_type = train_data.get('gpu_type', const.GPU_TYPE_DEFAULT) if gpu_type is None else gpu_type
+                cpu_count = run_data.get('cpu_count', const.CPU_COUNT_DEFAULT) if cpu_count is None else cpu_count
+                memory_size = run_data.get('memory_size', const.MEMORY_SIZE_DEFAULT) if memory_size is None else memory_size
+                gpu_count = run_data.get('gpu_count', const.GPU_COUNT_DEFAULT) if gpu_count is None else gpu_count
+                gpu_type = run_data.get('gpu_type', const.GPU_TYPE_DEFAULT) if gpu_type is None else gpu_type
 
                 if cloud == 'aws':
-                    metadata_db_hostname = train_data.get('metadata_db_hostname', const.METADATA_DB_HOSTNAME) if metadata_db_hostname is None else metadata_db_hostname
-                    metadata_db_username_secret = train_data.get('metadata_db_username_secret', const.METADATA_DB_USERNAME_SECRET) if metadata_db_username_secret is None else metadata_db_username_secret
-                    metadata_db_password_secret = train_data.get('metadata_db_password_secret', const.METADATA_DB_PASSWORD_SECRET) if metadata_db_password_secret is None else metadata_db_password_secret
-                    metadata_db_name = train_data.get('metadata_db_name', const.METADATA_DB_NAME) if metadata_db_name is None else metadata_db_name
+                    metadata_db_hostname = run_data.get('metadata_db_hostname', const.METADATA_DB_HOSTNAME) if metadata_db_hostname is None else metadata_db_hostname
+                    metadata_db_username_secret = run_data.get('metadata_db_username_secret', const.METADATA_DB_USERNAME_SECRET) if metadata_db_username_secret is None else metadata_db_username_secret
+                    metadata_db_password_secret = run_data.get('metadata_db_password_secret', const.METADATA_DB_PASSWORD_SECRET) if metadata_db_password_secret is None else metadata_db_password_secret
+                    metadata_db_name = run_data.get('metadata_db_name', const.METADATA_DB_NAME) if metadata_db_name is None else metadata_db_name
 
             elif cloud == 'local' or cloud == 'fast_local':
                 pass
@@ -108,7 +108,7 @@ def train(
             else:
                 raise RuntimeError("Reached parts of Hydra that are either not implemented or recognized.")
 
-            options_list = train_data.get('options', const.OPTIONS_DEFAULT) if options is None else options
+            options_list = run_data.get('options', const.OPTIONS_DEFAULT) if options is None else options
             if type(options_list) is str:
                 options_list = json.loads(options_list)
     # Read the options for run from CIL
@@ -164,7 +164,7 @@ def train(
         if cloud == 'fast_local':
             platform = FastLocalPlatform(model_path,
                                          f"{options_str} {hydra_core_configs_str}")
-            platform.train()
+            platform.run()
             continue
 
         if cloud == 'local':
@@ -216,6 +216,6 @@ def train(
         else:
             raise RuntimeError("Reached parts of Hydra that are not yet implemented.")
 
-        platform.train()
+        platform.run()
 
     return 0
