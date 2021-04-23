@@ -1,10 +1,10 @@
 variable "aws_region" {
   description = "AWS region"
-  type        = string
+  type = string
 }
 
-variable "lambda_service_role_name" {
-  description = "IAM name of the lambda function service role"
+variable "lambda_service_role_arn" {
+  description = "ARN of the IAM lambda function service role"
   type        = string
 }
 
@@ -16,11 +16,6 @@ variable "lambda_function_file_path" {
 variable "lambda_function_timeout" {
   description = "Timeout of the executed lambda function"
   type        = number
-}
-
-variable "lambda_service_iam_policy_arn" {
-  description = "IAM policies attached to the lambda function service role"
-  type        = list(string)
 }
 
 variable "lambda_function_name" {
