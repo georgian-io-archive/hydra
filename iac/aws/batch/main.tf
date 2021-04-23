@@ -27,6 +27,8 @@ module "permissions" {
   compute_environment_service_iam_policy_arn  = var.compute_environment_service_iam_policy_arn
   compute_environment_instance_role_name      = var.compute_environment_instance_role_name
   compute_environment_instance_iam_policy_arn = var.compute_environment_instance_iam_policy_arn
+  lambda_service_role_name                    = var.lambda_service_role_name
+  lambda_service_iam_policy_arn               = var.lambda_service_iam_policy_arn
 }
 
 module "secrets" {
@@ -83,10 +85,9 @@ module "batch" {
 
 module "lambda" {
   source                          = "./modules/lambda"
-  lambda_function_file_path       = "./modules/lambda/function/Archive.zip"
+  lambda_service_role_arn         = module.permissions.lambda_service_role_arn
+  lambda_function_file_path       = "./modules/lambda/function/batch_lambda.zip"
   lambda_function_name            = var.lambda_function_name
-  lambda_service_iam_policy_arn   = var.lambda_service_iam_policy_arn
-  lambda_service_role_name        = var.lambda_service_role_name
   lambda_function_timeout         = var.lambda_function_timeout
   lambda_security_group_ids       = var.security_groups
   lambda_subnets                  = var.subnets
