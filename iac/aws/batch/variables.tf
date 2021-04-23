@@ -112,6 +112,11 @@ variable "skip_final_snapshot" {
   default     = true
 }
 
+variable "publicly_accessible" {
+  description = "Whether the RDS instance is made publicly accesible"
+  type        = bool
+}
+
 variable "db_subnet_group_name" {
   description = "Database subnet group name"
   type        = string

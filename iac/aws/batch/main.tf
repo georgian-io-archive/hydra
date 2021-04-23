@@ -63,7 +63,7 @@ module "storage" {
   skip_final_snapshot             = var.skip_final_snapshot
   storage_type                    = var.storage_type
   vpc_security_groups             = var.security_groups
-  publicly_accessible             = false
+  publicly_accessible             = var.publicly_accessible
 }
 
 module "batch" {
