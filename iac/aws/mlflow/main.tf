@@ -59,6 +59,7 @@ module "load_balancing" {
   lb_subnets          = var.subnets
   lb_target_group     = var.lb_target_group
   vpc_id              = var.vpc_id
+  lb_is_internal      = var.lb_is_internal
 }
 
 module "storage" {

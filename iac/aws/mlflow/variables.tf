@@ -104,6 +104,11 @@ variable "lb_target_group" {
   type        = string
 }
 
+variable "lb_is_internal" {
+  description = "Whether the load balancer is internal"
+  type        = bool
+}
+
 # storage
 variable "mlflow_artifact_store" {
   description = "Bucket name"

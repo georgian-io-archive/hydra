@@ -22,3 +22,8 @@ variable "lb_target_group" {
   description = "Name of Load Balancer target group"
   type        = string
 }
+
+variable "lb_is_internal" {
+  description = "Whether the load balancer is internal"
+  type        = bool
+}
