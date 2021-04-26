@@ -52,13 +52,13 @@ else:
 
 # Adding metadata to database
 if args.db_hostname is None:
-    raise RuntimeError('db_hostname was not passed in as an argument')
+    print('db_hostname was not passed in as an argument: Job metadata will not be stored for this experiment')
 elif args.db_username_secret is None:
-    raise RuntimeError('db_username_secret was not passed in as an argument')
+    print('db_username_secret was not passed in as an argument: Job metadata will not be stored for this experiment')
 elif args.db_password_secret is None:
-    raise RuntimeError('db_password_secret was not passed in as an argument')
+    print('db_password_secret was not passed in as an argument: Job metadata will not be stored for this experiment')
 elif args.db_name is None:
-    raise RuntimeError('db_name was not passed in as an argument')
+    print('db_name was not passed in as an argument: Job metadata will not be stored for this experiment')
 else:
     secret = boto3.client('secretsmanager', region_name='us-east-1')
     username = secret.get_secret_value(SecretId=args.db_username_secret)['SecretString']
