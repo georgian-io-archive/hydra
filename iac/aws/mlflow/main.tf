@@ -1,13 +1,7 @@
 terraform {
   required_version = ">= 0.14"
 
-  backend "s3" {
-    bucket          = ""
-    key             = ""
-    encrypt         = true
-    region          = ""
-    dynamodb_table  = ""
-  }
+  backend "s3" {}
 
   required_providers {
     aws = {
