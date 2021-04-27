@@ -18,6 +18,11 @@ variable "subnet_b" {
   type        = string
 }
 
+variable "subnet_c" {
+  description = "ID of subnet c"
+  type        = string
+}
+
 # container_repository
 variable "mlflow_container_repository" {
   description = "Container repository name"
