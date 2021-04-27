@@ -15,6 +15,19 @@ provider "aws" {
   region = var.aws_region
 }
 
+module "permissions" {
+  source                  = "./modules/permissions"
+  cidr_blocks             = var.sg_cidr_blocks
+  hydrabatch_sg           = var.hydrabatch_sg
+  vpc_id                  = var.vpc_id
+}
+
+module "networking" {
+  source                = "./modules/networking"
+  rds_subnet_group_name = var.rds_subnet_group_name
+  rds_subnets           = [var.subnet_a, var.subnet_b, var.subnet_c]
+}
+
 module "secrets" {
   source                    = "./modules/secrets"
   password_length           = var.password_random_length
@@ -37,8 +50,8 @@ module "storage" {
   db_username                     = module.secrets.username
   skip_final_snapshot             = var.skip_final_snapshot
   storage_type                    = var.storage_type
-  vpc_security_groups             = var.vpc_security_groups
-  publicly_accessible             = true
+  vpc_security_groups             = [module.permissions.hydrabatch_sg_id]
+  publicly_accessible             = var.db_publicly_accessible
 }
 
 module "batch" {
@@ -63,6 +76,6 @@ resource "null_resource" "db_setup" {
   depends_on = [module.storage]
 
   provisioner "local-exec" {
-    command = "mysqlsh --sql -u ${module.secrets.username} -p${module.secrets.password} -h ${module.storage.db_host} -P 3306 < ./table_setup.sql"
+    command = "mysql -u ${module.secrets.username} -p${module.secrets.password} -h ${module.storage.db_host} -P 3306 < ./table_setup.sql"
   }
 }
