@@ -1,6 +1,6 @@
--- DROP DATABASE ailab_tracker;
-CREATE DATABASE IF NOT EXISTS <ENTER DATABASE HERE>;
-USE <ENTER DATABASE HERE>;
+-- DROP DATABASE hydra_tracker;
+CREATE DATABASE IF NOT EXISTS hydra_tracker;
+USE hydra_tracker;
 
 DROP TABLE IF EXISTS schema_info;
 CREATE TABLE schema_info (

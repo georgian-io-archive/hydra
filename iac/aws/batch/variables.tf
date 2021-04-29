@@ -3,6 +3,26 @@ variable "aws_region" {
   type        = string
 }
 
+variable "vpc_id" {
+  description = "VPC id"
+  type        = string
+}
+
+variable "subnet_a" {
+  description = "ID of subnet a"
+  type        = string
+}
+
+variable "subnet_b" {
+  description = "ID of subnet b"
+  type        = string
+}
+
+variable "subnet_c" {
+  description = "ID of subnet c"
+  type        = string
+}
+
 variable "password_random_length" {
   description = "Number of randomly generated characters in password"
   type = number
@@ -33,8 +53,24 @@ variable "username_secret_name" {
   type = string
 }
 
+variable "hydrabatch_sg" {
+  description = "Security group name"
+  type        = string
+}
+
+variable "sg_cidr_blocks" {
+  description = "CIDR Blocks to allow ingress access to required ports of security group"
+  type        = list(string)
+}
+
+# networking
+variable "rds_subnet_group_name" {
+  description = "RDB subnet group name"
+  type        = string
+}
+
 variable "batch_backend_store_identifier" {
-  description = "RDS Database identifier of MLflow backend store"
+  description = "RDS Database identifier of batch backend store"
   type        = string
 }
 
@@ -72,14 +108,15 @@ variable "skip_final_snapshot" {
   default     = true
 }
 
+variable "db_publicly_accessible" {
+  description = "Database should have a public facing IP"
+  type        = bool
+  default     = true
+}
+
 variable "db_subnet_group_name" {
   description = "Database subnet group name"
   type        = string
-}
-
-variable "vpc_security_groups" {
-  description = "VPC security groups associated with database"
-  type        = list(string)
 }
 
 variable "compute_environments" {

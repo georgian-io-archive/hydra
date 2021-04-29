@@ -89,4 +89,9 @@ resource "aws_ecs_service" "service" {
     security_groups   = var.ecs_service_security_groups
     assign_public_ip  = true
   }
+
+  # Allow external changes without Terraform plan difference
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
 }
