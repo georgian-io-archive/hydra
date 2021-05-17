@@ -5,7 +5,7 @@ class FastLocalPlatform(AbstractPlatform):
     def __init__(self, model_path, options):
         super().__init__(model_path, options)
 
-    def train(self):
+    def run(self):
         os.system(" ".join([self.options, 'python3', self.model_path]))
         return 0
 

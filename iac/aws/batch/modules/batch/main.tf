@@ -6,7 +6,7 @@ resource "aws_batch_compute_environment" "batch_compute_environment" {
   compute_environment_name  = each.key
 
   compute_resources {
-    instance_role       = var.compute_environment_instance_role
+    instance_role       = var.compute_environment_instance_profile_arn
     instance_type       = [each.value]
     max_vcpus           = var.compute_environment_max_vcpus
     min_vcpus           = var.compute_environment_min_vcpus
@@ -15,7 +15,7 @@ resource "aws_batch_compute_environment" "batch_compute_environment" {
     type                = var.compute_environment_resource_type
   }
 
-  service_role              = var.compute_environment_service_role
+  service_role              = var.compute_environment_service_role_arn
   type                      = var.compute_environment_type
 }
 

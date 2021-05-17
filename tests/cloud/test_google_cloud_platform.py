@@ -46,12 +46,12 @@ def google_cloud_platform():
     yield gcp
 
 
-def test_train_local(mocker, google_cloud_platform):
+def test_run_local(mocker, google_cloud_platform):
     mocker.patch(
         'hydra.cloud.google_cloud_platform.GoogleCloudPlatform.run_command',
     )
 
-    result = google_cloud_platform.train()
+    result = google_cloud_platform.run()
 
     google_cloud_platform.run_command.assert_called_once_with(['sh', SCRIPT_PATH, '-g', GIT_URL,
         '-c', COMMIT_SHA, '-o', GITHUB_TOKEN, '-m', MODEL_PATH, '-r', REGION,

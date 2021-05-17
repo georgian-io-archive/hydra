@@ -1,4 +1,4 @@
-train:
+run:
   model_path: "d3bug.py"
   cloud: "local"
   cpu_count: 8

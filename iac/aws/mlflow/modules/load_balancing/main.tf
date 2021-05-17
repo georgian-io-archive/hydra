@@ -1,6 +1,6 @@
 resource "aws_lb" "mlflow_lb" {
   name                = var.lb_name
-  internal            = false
+  internal            = var.lb_is_internal
   load_balancer_type  = "application"
   security_groups     = var.lb_security_groups
   subnets             = var.lb_subnets

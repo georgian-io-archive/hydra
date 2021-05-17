@@ -39,7 +39,7 @@ module "permissions" {
 module "networking" {
   source                = "./modules/networking"
   rds_subnet_group_name = var.rds_subnet_group_name
-  rds_subnets           = [var.subnet_a, var.subnet_b]
+  rds_subnets           = var.subnets
 }
 
 module "secrets" {
@@ -56,9 +56,10 @@ module "load_balancing" {
   source              = "./modules/load_balancing"
   lb_name             = var.lb_name
   lb_security_groups  = [module.permissions.mlflow_sg_id]
-  lb_subnets          = [var.subnet_a, var.subnet_b]
+  lb_subnets          = var.subnets
   lb_target_group     = var.lb_target_group
   vpc_id              = var.vpc_id
+  lb_is_internal      = var.lb_is_internal
 }
 
 module "storage" {
@@ -91,7 +92,7 @@ module "task_deployment" {
   docker_image                = "${module.container_repository.container_repository_url}:latest"
   ecs_service_name            = var.ecs_service_name
   ecs_service_security_groups = [module.permissions.mlflow_sg_id]
-  ecs_service_subnets         = [var.subnet_a]
+  ecs_service_subnets         = var.subnets
   execution_role_arn          = module.permissions.mlflow_ecs_tasks_role_arn
   mlflow_ecs_task_family      = var.mlflow_ecs_task_family
   mlflow_server_cluster       = var.mlflow_server_cluster

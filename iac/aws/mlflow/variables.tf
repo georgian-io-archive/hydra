@@ -8,14 +8,9 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "subnet_a" {
-  description = "ID of subnet a"
-  type        = string
-}
-
-variable "subnet_b" {
-  description = "ID of subnet b"
-  type        = string
+variable "subnets" {
+  description = "List of subnet IDs that will be used in build"
+  type        = list(string)
 }
 
 # container_repository
@@ -107,6 +102,11 @@ variable "lb_name" {
 variable "lb_target_group" {
   description = "Name of LB target group"
   type        = string
+}
+
+variable "lb_is_internal" {
+  description = "Whether the load balancer is internal"
+  type        = bool
 }
 
 # storage
