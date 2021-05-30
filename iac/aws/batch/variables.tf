@@ -53,38 +53,38 @@ variable "username_secret_name" {
   type = string
 }
 
-variable "table_setup_script_bucket_name" {
-  description = "The name of the S3 bucket that will store the table setup script"
+variable "db_schema_setup_script_bucket_name" {
+  description = "The name of the S3 bucket that will store the schema setup script"
   type        = string
 }
 
-variable "table_setup_script_bucket_key" {
-  description = "The key of the S3 bucket that will store the table setup script"
+variable "db_schema_setup_script_bucket_key" {
+  description = "The key in the S3 bucket that will store the schema setup script"
   type        = string
 }
 
-variable "rds_subnet_group_name" {
-  description = "RDS subnet group name"
-  type        = string
-}
-
-variable "subnets" {
+variable "db_subnets" {
   description = "Subnets attached to RDS, Compute Environment, and Lambda"
   type        = list(string)
 }
 
-variable "batch_backend_store_identifier" {
-  description = "RDS Database identifier of MLflow backend store"
+variable "db_subnet_group_name" {
+  description = "Database subnet group name"
   type        = string
 }
 
-variable "allocated_storage" {
+variable "db_batch_backend_store_identifier" {
+  description = "RDS Database identifier of batch backend store"
+  type        = string
+}
+
+variable "db_allocated_storage" {
   description = "Allocated storage of RDS instance"
   type        = string
   default     = 20
 }
 
-variable "storage_type" {
+variable "db_storage_type" {
   description = "RDS Storage type"
   type        = string
   default     = "standard"
@@ -106,19 +106,24 @@ variable "db_default_name" {
   type        = string
 }
 
-variable "skip_final_snapshot" {
+variable "db_skip_final_snapshot" {
   description = "Whether a final snapshot is created before database deletion"
   type        = bool
   default     = true
 }
 
-variable "publicly_accessible" {
+variable "db_publicly_accessible" {
   description = "Whether the RDS instance is made publicly accesible"
   type        = bool
 }
 
-variable "db_subnet_group_name" {
-  description = "Database subnet group name"
+variable "subnets" {
+  description = "Subnets where Hydra is being deployed"
+  type        = list(string)
+}
+
+variable "subnet_group_name" {
+  description = "Subnet group name for hydra resources (can be the same as the db)"
   type        = string
 }
 
