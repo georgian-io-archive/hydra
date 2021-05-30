@@ -1,13 +1,7 @@
 terraform {
   required_version = ">= 0.14"
 
-  backend "s3" {
-    bucket          = ""
-    key             = ""
-    encrypt         = true
-    region          = ""
-    dynamodb_table  = ""
-  }
+  backend "s3" {}
 
   required_providers {
     aws = {
@@ -43,27 +37,28 @@ module "secrets" {
 
 module "networking" {
   source                = "./modules/networking"
-  rds_subnet_group_name = var.rds_subnet_group_name
-  rds_subnets           = var.subnets
+  db_subnet_group_name  = var.db_subnet_group_name
+  db_subnets            = var.db_subnets
 }
 
 module "storage" {
-  source                          = "./modules/storage"
-  table_setup_script_bucket_name  = var.table_setup_script_bucket_name
-  table_setup_script_bucket_key   = var.table_setup_script_bucket_key
-  table_setup_script_local_path   = "./modules/storage/scripts/table_setup.sql"
-  allocated_storage               = var.allocated_storage
-  batch_backend_store_identifier  = var.batch_backend_store_identifier
-  db_default_name                 = var.db_default_name
-  db_engine_version               = var.db_engine_version
-  db_instance_class               = var.db_instance_class
-  db_password                     = module.secrets.password
-  db_subnet_group_name            = module.networking.db_subnet_group
-  db_username                     = module.secrets.username
-  skip_final_snapshot             = var.skip_final_snapshot
-  storage_type                    = var.storage_type
-  vpc_security_groups             = var.security_groups
-  publicly_accessible             = var.publicly_accessible
+  source                              = "./modules/storage"
+  db_schema_setup_script_bucket_name  = var.db_schema_setup_script_bucket_name
+  db_schema_setup_script_bucket_key   = var.db_schema_setup_script_bucket_key
+  db_schema_setup_script_local_path   = "./modules/storage/scripts/schema_setup_v_0_0_1.sql"
+  db_allocated_storage                = var.db_allocated_storage
+  db_batch_backend_store_identifier   = var.db_batch_backend_store_identifier
+  db_default_name                     = var.db_default_name
+  db_engine_version                   = var.db_engine_version
+  db_instance_class                   = var.db_instance_class
+  db_username                         = module.secrets.username
+  db_password                         = module.secrets.password
+  db_subnets                          = var.db_subnets
+  db_subnet_group_name                = module.networking.db_subnet_group
+  db_skip_final_snapshot              = var.db_skip_final_snapshot
+  db_storage_type                     = var.db_storage_type
+  db_security_groups                  = var.security_groups
+  db_publicly_accessible              = var.db_publicly_accessible
 }
 
 module "batch" {
@@ -95,7 +90,7 @@ module "lambda" {
   database_username_secret        = module.secrets.username_secret
   database_password_secret        = module.secrets.password_secret
   database_default_name           = var.db_default_name
-  table_setup_script_bucket_name  = module.storage.table_setup_script_bucket_name
-  table_setup_script_bucket_key   = module.storage.table_setup_script_bucket_key
+  table_setup_script_bucket_name  = module.storage.db_schema_setup_script_bucket_name
+  table_setup_script_bucket_key   = module.storage.db_schema_setup_script_bucket_key
   aws_region                      = var.aws_region
 }
