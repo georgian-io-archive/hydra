@@ -53,12 +53,12 @@ variable "database_default_name" {
   type        = string
 }
 
-variable "table_setup_script_bucket_name" {
+variable "db_schema_setup_script_bucket_name" {
   description = "The name of the S3 bucket that will store the table setup script"
   type        = string
 }
 
-variable "table_setup_script_bucket_key" {
+variable "db_schema_setup_script_bucket_key" {
   description = "The key of the S3 bucket that will store the table setup script"
   type        = string
 }

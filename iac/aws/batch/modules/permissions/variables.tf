@@ -27,3 +27,13 @@ variable "lambda_service_iam_policy_arn" {
   description = "IAM policies attached to the lambda function service role"
   type        = list(string)
 }
+
+variable "db_schema_setup_script_bucket_name" {
+  description = "The name of the S3 bucket that will store the table setup script"
+  type        = string
+}
+
+variable "db_schema_setup_script_bucket_key" {
+  description = "The key of the S3 bucket that will store the table setup script"
+  type        = string
+}

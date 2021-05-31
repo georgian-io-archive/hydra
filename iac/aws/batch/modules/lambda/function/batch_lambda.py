@@ -8,7 +8,7 @@ def initialize_db(event, context):
     s3 = boto3.client('s3', region_name=region)
     secret = boto3.client('secretsmanager', region_name=region)
 
-    obj = s3.get_object(Bucket=event['table_setup_script_bucket_name'], Key=event['table_setup_script_bucket_key'])
+    obj = s3.get_object(Bucket=event['db_schema_setup_script_bucket_name'], Key=event['db_schema_setup_script_bucket_key'])
     command_string = obj['Body'].read().decode('utf-8')
 
     commands = command_string.split(';')

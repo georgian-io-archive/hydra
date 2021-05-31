@@ -23,6 +23,8 @@ module "permissions" {
   compute_environment_instance_iam_policy_arn = var.compute_environment_instance_iam_policy_arn
   lambda_service_role_name                    = var.lambda_service_role_name
   lambda_service_iam_policy_arn               = var.lambda_service_iam_policy_arn
+  db_schema_setup_script_bucket_name  = module.storage.db_schema_setup_script_bucket_name
+  db_schema_setup_script_bucket_key   = module.storage.db_schema_setup_script_bucket_key
 }
 
 module "secrets" {
@@ -90,7 +92,7 @@ module "lambda" {
   database_username_secret        = module.secrets.username_secret
   database_password_secret        = module.secrets.password_secret
   database_default_name           = var.db_default_name
-  table_setup_script_bucket_name  = module.storage.db_schema_setup_script_bucket_name
-  table_setup_script_bucket_key   = module.storage.db_schema_setup_script_bucket_key
+  db_schema_setup_script_bucket_name  = module.storage.db_schema_setup_script_bucket_name
+  db_schema_setup_script_bucket_key   = module.storage.db_schema_setup_script_bucket_key
   aws_region                      = var.aws_region
 }
