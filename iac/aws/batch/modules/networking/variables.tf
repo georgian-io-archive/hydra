@@ -1,9 +1,9 @@
-variable "rds_subnet_group_name" {
+variable "db_subnet_group_name" {
   description = "RDS subnet group name"
   type        = string
 }
 
-variable "rds_subnets" {
-  description = "Subnets attached to RDS"
+variable "db_subnets" {
+  description = "Subnets attached to RDS (recommended to match Hydra's subnets)"
   type        = list(string)
 }

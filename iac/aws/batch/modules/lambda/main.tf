@@ -17,8 +17,8 @@ data "aws_lambda_invocation" "db_init" {
 
   input = <<JSON
   {
-    "table_setup_script_bucket_name" : "${var.table_setup_script_bucket_name}",
-    "table_setup_script_bucket_key" : "${var.table_setup_script_bucket_key}",
+    "db_schema_setup_script_bucket_name" : "${var.db_schema_setup_script_bucket_name}",
+    "db_schema_setup_script_bucket_key" : "${var.db_schema_setup_script_bucket_key}",
     "database_hostname" : "${var.database_hostname}",
     "database_username_secret" : "${var.database_username_secret}",
     "database_password_secret" : "${var.database_password_secret}",
